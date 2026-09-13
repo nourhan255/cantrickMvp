@@ -1,0 +1,4172 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cantrick — Your First Job in Tech</title>
+<meta name="description" content="Learn Python by doing the job: write it, test it, debug it, ship it.">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%224%22 fill=%22%231F1C16%22/%3E%3Crect x=%226%22 y=%229%22 width=%2220%22 height=%2214%22 rx=%222%22 fill=%22%23DE9A2E%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+/* ===== tokens.css ===== */
+/* ==========================================================================
+   Cantrick — design tokens
+   --------------------------------------------------------------------------
+   Direction: retro-corporate. The fiction is "your first job in tech", so the
+   UI is dressed as the company's own software — putty plastic, CRT amber,
+   laminated nameplates, dot-matrix labels — not as a fantasy dungeon.
+
+   Rule of thumb: the UI is warm and paper-like, the canvas world is the
+   office it describes. Every colour below is used for a reason, not a mood.
+   ========================================================================== */
+
+:root {
+  /* --- surfaces: office plastic and paper ------------------------------ */
+  --putty:        #FFF6E9;  /* bright warm paper — the base ground */
+  --putty-lit:    #FFFFFF;  /* raised panel, card face */
+  --putty-dim:    #FBE7C6;  /* recessed panel, inset well */
+  --paper:        #FFFFFF;  /* documents, input fields */
+  --carpet:       #2B2350;  /* office at night — dark UI ground */
+  --carpet-deep:  #1B1638;
+
+  /* --- ink ------------------------------------------------------------- */
+  --ink:          #241C33;
+  --ink-2:        #57524612;  /* not a text colour — hairline wash */
+  --ink-soft:     #5A5270;
+  --ink-faint:    #948AA6;
+  --on-dark:      #F5F1FF;
+  --on-dark-soft: #B8AED6;
+
+  /* --- structure ------------------------------------------------------- */
+  --rule:         #ECD9AE;
+  --rule-hard:    #241C33;
+  --shadow-hard:  #E0A93E;
+
+  /* --- the four roles --------------------------------------------------
+     These are the spine of the whole product. Same four hues appear on the
+     team bar, the station desks in-world, the role badge, and the nameplates.
+     Bolder and more saturated than the old muted set — the same identity,
+     turned up. Never reuse them for anything that is not a role.          */
+  --role-developer: #FFB627;  /* Sara   — vivid gold */
+  --role-tester:    #1FC17E;  /* Omar   — vivid emerald */
+  --role-debugger:  #FF4757;  /* Laila  — vivid coral-red */
+  --role-client:    #3E8EF7;  /* Adel   — vivid azure */
+
+  --role-developer-lit: #FFE2A3;
+  --role-tester-lit:    #B4F2D6;
+  --role-debugger-lit:  #FFC7CC;
+  --role-client-lit:    #C6E0FF;
+
+  /* --- semantic (separate from role colour) ---------------------------- */
+  --ok:      #1FC17E;
+  --warn:    #FFB627;
+  --fault:   #FF4757;
+  --ok-wash:    rgba(31,193,126,0.16);
+  --warn-wash:  rgba(255,182,39,0.18);
+  --fault-wash: rgba(255,71,87,0.16);
+
+  /* --- CRT ------------------------------------------------------------- */
+  --crt-glass:  #241D3F;
+  --crt-text:   #FFD166;
+  --crt-glow:   rgba(255,209,102,0.45);
+
+  /* --- type ------------------------------------------------------------ */
+  --f-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, "Courier New", monospace;
+
+  --t-xs:   0.72rem;
+  --t-sm:   0.83rem;
+  --t-base: 0.95rem;
+  --t-md:   1.08rem;
+  --t-lg:   1.35rem;
+  --t-xl:   1.9rem;
+  --t-2xl:  2.6rem;
+  --t-3xl:  3.6rem;
+
+  /* --- space (4px base) ------------------------------------------------ */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  /* --- form ------------------------------------------------------------
+     Rounder than the old brutalist office look — friendlier and more
+     game-like, while the offset "chunky" shadow keeps things feeling
+     pressable rather than flat and generic.                             */
+  --r-sm: 9px;
+  --r-md: 16px;
+  --r-pill: 999px;
+
+  /* Bevel: still light-from-top-left / hard-shadow-bottom-right, just in a
+     warmer, more vivid shadow colour so it reads as playful, not beige.  */
+  --bevel-out: inset 1px 1px 0 rgba(255,255,255,0.75),
+               inset -1px -1px 0 rgba(0,0,0,0.16);
+  --bevel-in:  inset -1px -1px 0 rgba(255,255,255,0.55),
+               inset 1px 1px 0 rgba(0,0,0,0.22);
+  --lift: 3px 3px 0 var(--shadow-hard);
+  --lift-sm: 2px 2px 0 var(--shadow-hard);
+}
+
+
+/* ===== base.css ===== */
+/* ==========================================================================
+   Cantrick — reset, typography, shared controls
+   ========================================================================== */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--carpet-deep);
+  color: var(--ink);
+  font-family: var(--f-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--role-developer);
+  outline-offset: 2px;
+}
+
+/* --- headings ---------------------------------------------------------- */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* --- the label: dot-matrix caps, used for every field name in the UI ---- */
+.label {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* --- keycap ------------------------------------------------------------ */
+.key {
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--putty-lit);
+  border: 1px solid var(--rule);
+  border-bottom-width: 3px;
+  border-radius: var(--r-sm);
+  padding: 1px 7px;
+  min-width: 26px;
+  text-align: center;
+}
+
+/* --- buttons -----------------------------------------------------------
+   One button object, three sizes, two emphases. Beveled hardware, not a
+   gradient pill.                                                          */
+.btn {
+  font-family: var(--f-sans);
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  background: var(--putty-lit);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  padding: 10px 22px;
+  cursor: pointer;
+  box-shadow: var(--lift);
+  transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
+}
+.btn:hover:not(:disabled) { background: var(--paper); }
+.btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--shadow-hard);
+}
+.btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: var(--lift); }
+
+.btn--primary {
+  background: var(--role-developer);
+  color: var(--ink);
+}
+.btn--primary:hover:not(:disabled) { background: #EBAA43; }
+
+.btn--go {
+  background: var(--ok);
+  color: var(--paper);
+}
+.btn--go:hover:not(:disabled) { background: #489C74; }
+
+.btn--lg { font-size: var(--t-md); padding: 14px 34px; }
+.btn--sm { font-size: var(--t-sm); padding: 6px 14px; box-shadow: var(--lift-sm); }
+.btn--sm:active:not(:disabled) { transform: translate(2px, 2px); }
+
+.btn--quiet {
+  background: transparent;
+  border-color: var(--rule);
+  box-shadow: none;
+  color: var(--ink-soft);
+}
+.btn--quiet:hover:not(:disabled) { background: var(--putty-dim); box-shadow: none; }
+.btn--quiet:active:not(:disabled) { transform: none; box-shadow: none; }
+
+/* --- panel: the recurring surface --------------------------------------- */
+.panel {
+  background: var(--putty-lit);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  box-shadow: var(--lift);
+}
+
+/* --- code, everywhere ---------------------------------------------------- */
+.code-block {
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--crt-text);
+  background: var(--crt-glass);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  padding: var(--s-3) var(--s-4);
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  overflow-x: auto;
+}
+.code-block .keyword { color: #8CB4E8; }
+.code-block .string  { color: #E9A06B; }
+.code-block .comment { color: #7F9B7C; }
+.code-block .type    { color: #6FC7B4; }
+.code-block[hidden]  { display: none !important; }
+
+/* --- scrollbars, so they stop looking like a different product ---------- */
+* { scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ===== screens.css ===== */
+/* ==========================================================================
+   Cantrick — full-screen states: onboarding, floor directory, wrap-up, ship
+   --------------------------------------------------------------------------
+   These read as company paperwork: an induction sheet, a building directory,
+   a completed job ticket, a delivery note.
+   ========================================================================== */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-content: safe center;
+  overflow-y: auto;
+  padding: var(--s-5) var(--s-5) var(--s-6);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255,182,39,0.14), transparent 46%),
+    radial-gradient(circle at 92% 12%, rgba(62,142,247,0.10), transparent 42%),
+    radial-gradient(circle at 50% 100%, rgba(31,193,126,0.08), transparent 50%),
+    var(--putty);
+}
+.screen.is-open { display: flex; }
+
+.sheet {
+  width: 100%;
+  max-width: 940px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+/* --- letterhead --------------------------------------------------------- */
+.letterhead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-4);
+  border-bottom: 3px solid var(--rule-hard);
+  padding-bottom: var(--s-3);
+  flex-wrap: wrap;
+}
+.wordmark {
+  font-family: var(--f-sans);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 5.2vw, 3.1rem);
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+  color: var(--ink);
+}
+.wordmark .dot { color: var(--role-developer); }
+.letterhead .meta {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* --- induction copy ------------------------------------------------------ */
+.memo {
+  display: grid;
+  grid-template-columns: 1fr 290px;
+  gap: var(--s-4) var(--s-5);
+  align-items: start;
+}
+@media (max-width: 800px) { .memo { grid-template-columns: 1fr; } }
+
+.memo-body { display: flex; flex-direction: column; gap: var(--s-3); }
+.memo-body h2 {
+  font-size: var(--t-lg);
+  margin-bottom: var(--s-1);
+}
+.memo-body p {
+  max-width: 62ch;
+  font-size: var(--t-base);
+  line-height: 1.55;
+  color: var(--ink);
+}
+.memo-body p strong { font-weight: 600; }
+
+/* --- the four teammates: laminated ID cards ------------------------------ */
+.crew {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.crew-card {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: var(--s-3);
+  align-items: center;
+  background: var(--putty-lit);
+  border: 2px solid var(--rule-hard);
+  border-left-width: 7px;
+  border-radius: var(--r-sm);
+  padding: 6px var(--s-3);
+  box-shadow: var(--lift-sm);
+}
+.crew-card .badge-photo {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  font-size: 1.15rem;
+  background: var(--putty-dim);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+}
+.crew-card .who {
+  display: block;
+  font-weight: 600;
+  font-size: var(--t-base);
+  line-height: 1.25;
+}
+.crew-card .role {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.crew-card.developer { border-left-color: var(--role-developer); }
+.crew-card.developer .role { color: var(--role-developer); }
+.crew-card.tester { border-left-color: var(--role-tester); }
+.crew-card.tester .role { color: var(--role-tester); }
+.crew-card.debugger { border-left-color: var(--role-debugger); }
+.crew-card.debugger .role { color: var(--role-debugger); }
+.crew-card.client { border-left-color: var(--role-client); }
+.crew-card.client .role { color: var(--role-client); }
+
+/* --- controls strip ------------------------------------------------------ */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  flex-wrap: wrap;
+  background: var(--putty-dim);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  padding: var(--s-2) var(--s-3);
+}
+.controls .ctl { display: flex; align-items: center; gap: var(--s-2); }
+.controls .ctl span:last-child { font-size: var(--t-sm); color: var(--ink-soft); }
+
+/* --- floor directory ----------------------------------------------------- */
+.directory {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--s-3);
+}
+.floor {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: var(--s-3);
+  text-align: left;
+  background: var(--putty-lit);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  padding: var(--s-4);
+  cursor: pointer;
+  box-shadow: var(--lift);
+  transition: transform 0.1s, box-shadow 0.1s;
+  font: inherit;
+  color: inherit;
+}
+.floor:hover:not(.is-locked) { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--shadow-hard); }
+.floor:active:not(.is-locked) { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--shadow-hard); }
+.floor.is-locked { opacity: 0.55; cursor: not-allowed; filter: saturate(0.25); box-shadow: none; }
+
+.floor .no {
+  font-family: var(--f-mono);
+  font-size: var(--t-xl);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: var(--r-sm);
+  display: grid;
+  place-items: center;
+  font-variant-numeric: tabular-nums;
+}
+.floor h3 { font-size: var(--t-md); margin-bottom: var(--s-1); }
+.floor p { font-size: var(--t-sm); color: var(--ink-soft); line-height: 1.45; }
+.floor .status {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: var(--s-2);
+  display: inline-block;
+  padding: 2px 7px;
+  border: 1px solid currentColor;
+  border-radius: var(--r-sm);
+}
+.floor .status.open     { color: var(--role-developer); }
+.floor .status.done     { color: var(--ok); }
+.floor .status.shut     { color: var(--ink-faint); }
+.floor[data-dept="0"] .no { background: var(--role-developer); color: var(--ink); }
+.floor[data-dept="1"] .no { background: var(--role-tester); color: var(--paper); }
+.floor[data-dept="2"] .no { background: var(--role-client); color: var(--paper); }
+.floor[data-dept="3"] .no { background: var(--role-debugger); color: var(--paper); }
+.floor[data-dept="4"] .no { background: var(--ink); color: var(--role-developer); }
+
+/* --- end-of-department job ticket ---------------------------------------- */
+#screen-complete, #screen-win {
+  z-index: 90;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,182,39,0.16), transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(62,142,247,0.14), transparent 50%),
+    var(--carpet-deep);
+}
+.ticket {
+  width: 100%;
+  max-width: 460px;
+  flex: none;
+  background: var(--paper);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.35);
+  overflow: hidden;
+  text-align: left;
+}
+.ticket-head {
+  background: var(--ink);
+  color: var(--paper);
+  padding: var(--s-3) var(--s-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+.ticket-head .label { color: var(--on-dark-soft); }
+.ticket-head h1 { font-size: var(--t-lg); }
+.ticket-body { padding: var(--s-5) var(--s-4); display: flex; flex-direction: column; gap: var(--s-4); }
+.ticket-body > p { font-size: var(--t-base); }
+
+/* perforated tear line — the one flourish this screen gets */
+.perf {
+  border: none;
+  border-top: 2px dashed var(--rule);
+  margin: 0 calc(var(--s-4) * -1);
+}
+
+.readout { display: flex; flex-direction: column; gap: var(--s-2); }
+.readout-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-3);
+  border-bottom: 1px dotted var(--rule);
+  padding-bottom: var(--s-1);
+}
+.readout-row .v {
+  font-family: var(--f-mono);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--t-md);
+}
+
+/* review rating, as stamped boxes rather than star glyphs */
+.rating { display: flex; gap: var(--s-1); }
+.rating i {
+  width: 26px; height: 20px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-sm);
+  background: var(--putty-dim);
+}
+.rating i.on { background: var(--role-developer); }
+
+.ticket-actions { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+
+/* --- delivery note (final win) ------------------------------------------- */
+#screen-win .ticket-head { background: var(--ok); }
+.stamp {
+  align-self: flex-start;
+  font-family: var(--f-mono);
+  font-weight: 700;
+  font-size: var(--t-md);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ok);
+  border: 3px solid var(--ok);
+  border-radius: var(--r-md);
+  padding: var(--s-2) var(--s-3);
+  transform: rotate(-6deg);
+  opacity: 0.9;
+}
+
+/* --------------------------------------------------------------------------
+   Short viewports.
+
+   Windows display scaling at 125–150% leaves a lot of laptops with well under
+   700 CSS pixels of height. The induction screen has to fit there without a
+   scroll — "Clock in" is the first thing a new player looks for, and a button
+   below the fold reads as a broken page, not as something to scroll to.
+   -------------------------------------------------------------------------- */
+@media (max-height: 760px) {
+  .screen { padding: var(--s-4) var(--s-5); }
+  .sheet { gap: var(--s-3); }
+
+  .wordmark { font-size: clamp(1.7rem, 4.4vw, 2.5rem); }
+  .letterhead { padding-bottom: var(--s-2); }
+
+  .memo { gap: var(--s-3) var(--s-5); }
+  .memo-body { gap: var(--s-2); }
+  .memo-body h2 { font-size: var(--t-md); }
+  .memo-body p { font-size: var(--t-sm); line-height: 1.5; }
+
+  .crew-card { padding: 4px var(--s-2); grid-template-columns: 26px 1fr; gap: var(--s-2); }
+  .crew-card .badge-photo { width: 26px; height: 26px; font-size: 0.95rem; }
+  .crew-card .who { font-size: var(--t-sm); }
+
+  .btn--lg { font-size: var(--t-base); padding: 10px 26px; }
+
+  .floor { padding: var(--s-3); }
+  .floor p { font-size: var(--t-xs); }
+  .ticket-body { padding: var(--s-4); gap: var(--s-3); }
+}
+
+/* --------------------------------------------------------------------------
+   "You need a server" notice.
+
+   Only ever visible when the page was opened off disk (or the modules failed
+   to boot). Styled here rather than inline so it still looks like Cantrick.
+   -------------------------------------------------------------------------- */
+#needs-server {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  padding: var(--s-5);
+  overflow-y: auto;
+  background: rgba(31,28,22,0.86);
+}
+#needs-server[hidden] { display: none !important; }
+
+.server-note {
+  width: 100%;
+  max-width: 560px;
+  background: var(--paper);
+  border: 2px solid var(--rule-hard);
+  border-left: 7px solid var(--fault);
+  border-radius: var(--r-sm);
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.4);
+  padding: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+.server-note h2 { font-size: var(--t-lg); }
+.server-note p { font-size: var(--t-base); max-width: none; }
+.server-note code {
+  font-family: var(--f-mono);
+  font-size: 0.92em;
+  background: var(--putty-dim);
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+}
+.server-note .code-block { font-size: var(--t-base); padding: var(--s-2) var(--s-3); }
+.server-note a { color: var(--role-client); font-weight: 600; }
+
+/* --------------------------------------------------------------------------
+   Induction — entrance choreography and idle life.
+
+   The page loads once, so the payoff has to happen in the first second: the
+   letterhead drops in, the level badge lands like a rubber stamp, each line
+   of copy and each ID card cascades in behind it, and the crew stay subtly
+   alive (a small bob) so the room never looks frozen. "Clock in" gets a slow
+   pulse once everything has settled, so the eye always knows where to go
+   next. prefers-reduced-motion turns all of this off globally (see base.css).
+   -------------------------------------------------------------------------- */
+#screen-start { position: relative; }
+#screen-start::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(222,154,46,0.09), transparent 42%),
+    radial-gradient(circle at 86% 78%, rgba(58,102,152,0.07), transparent 46%);
+  animation: driftGlow 13s ease-in-out infinite alternate;
+}
+#screen-start .sheet { position: relative; z-index: 1; }
+
+#screen-start .letterhead {
+  animation: sheetSlideDown 0.5s cubic-bezier(0.2,0.8,0.2,1) both;
+}
+
+#screen-start .memo-body > .label {
+  display: inline-block;
+  animation: stampIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.15s both;
+}
+#screen-start .memo-body h2 {
+  opacity: 0;
+  animation: fadeSlideUp 0.45s ease-out 0.28s both;
+}
+#screen-start .memo-body p {
+  opacity: 0;
+  animation: fadeSlideUp 0.45s ease-out both;
+}
+#screen-start .memo-body p:nth-of-type(1) { animation-delay: 0.38s; }
+#screen-start .memo-body p:nth-of-type(2) { animation-delay: 0.48s; }
+#screen-start .memo-body p:nth-of-type(3) { animation-delay: 0.58s; }
+#screen-start .memo-body p:nth-of-type(4) { animation-delay: 0.68s; }
+#screen-start .memo-body p.hint { color: var(--ink-faint); font-size: var(--t-sm); }
+
+#screen-start .controls {
+  opacity: 0;
+  animation: fadeSlideUp 0.45s ease-out 0.78s both;
+}
+#screen-start .memo-body > div:last-child {
+  opacity: 0;
+  animation: fadeSlideUp 0.45s ease-out 0.9s both;
+}
+#screen-start #btn-begin {
+  animation: beginPulse 2.2s ease-in-out 1.6s infinite;
+}
+#screen-start #btn-begin:hover { animation-play-state: paused; }
+
+#screen-start .crew { position: relative; }
+#screen-start .crew .label {
+  opacity: 0;
+  animation: fadeSlideUp 0.4s ease-out 0.3s both;
+}
+#screen-start .crew-card {
+  opacity: 0;
+  animation: cardSlideIn 0.4s ease-out both;
+}
+#screen-start .crew-card:nth-child(2) { animation-delay: 0.5s; }
+#screen-start .crew-card:nth-child(3) { animation-delay: 0.64s; }
+#screen-start .crew-card:nth-child(4) { animation-delay: 0.78s; }
+#screen-start .crew-card:nth-child(5) { animation-delay: 0.92s; }
+
+#screen-start .crew-card .badge-photo {
+  display: grid;
+  animation: badgeBob 2.6s ease-in-out infinite;
+}
+#screen-start .crew-card:nth-child(2) .badge-photo { animation-delay: 0.1s; }
+#screen-start .crew-card:nth-child(3) .badge-photo { animation-delay: 0.35s; }
+#screen-start .crew-card:nth-child(4) .badge-photo { animation-delay: 0.6s; }
+#screen-start .crew-card:nth-child(5) .badge-photo { animation-delay: 0.85s; }
+
+#screen-start .crew-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--shadow-hard);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+@keyframes driftGlow {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-2%, 2%) scale(1.05); }
+}
+@keyframes sheetSlideDown {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes stampIn {
+  0%   { opacity: 0; transform: scale(2.1) rotate(-8deg); }
+  55%  { opacity: 1; transform: scale(0.94) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateX(22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes badgeBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-3px) rotate(-4deg); }
+}
+@keyframes beginPulse {
+  0%, 100% { box-shadow: var(--lift); }
+  50%      { box-shadow: var(--lift), 0 0 0 6px var(--warn-wash); }
+}
+
+/* --------------------------------------------------------------------------
+   Splash — the title screen. Cantrick on its own, before the paperwork
+   starts. A portal rather than a logo mark: four role colours spinning
+   around a dark centre, foreshadowing the crew you're about to meet.
+   -------------------------------------------------------------------------- */
+#screen-splash {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(222,154,46,0.05), transparent 55%),
+    var(--carpet-deep);
+}
+.splash-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+  text-align: center;
+  animation: fadeSlideUp 0.6s ease-out both;
+}
+.portal {
+  width: 148px;
+  height: 148px;
+  border-radius: 50%;
+  position: relative;
+  margin-bottom: var(--s-2);
+  background: conic-gradient(
+    from 0deg,
+    var(--role-developer), var(--role-client),
+    var(--role-debugger), var(--role-tester),
+    var(--role-developer)
+  );
+  box-shadow: 0 0 46px 8px var(--crt-glow);
+  animation: portalSpin 7s linear infinite;
+}
+.portal-core {
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  display: block;
+  background: radial-gradient(circle, #0A0806 0%, rgba(10,8,6,0.94) 55%, transparent 100%);
+  animation: portalPulse 2.4s ease-in-out infinite;
+}
+.splash-wordmark {
+  font-size: clamp(2.6rem, 8vw, 4.2rem);
+  color: var(--on-dark);
+}
+.splash-tag {
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-dark-soft);
+  margin-bottom: var(--s-3);
+}
+#btn-launch { animation: beginPulse 2s ease-in-out 1s infinite; }
+#btn-launch:hover { animation-play-state: paused; }
+
+@keyframes portalSpin { to { transform: rotate(360deg); } }
+@keyframes portalPulse {
+  0%, 100% { inset: 16%; }
+  50%      { inset: 12%; }
+}
+
+/* --------------------------------------------------------------------------
+   Warp transition — the jump from the splash into the office. A point of
+   light collapses in, flashes to fill the screen, then fades out again; the
+   screen swap underneath happens while it's at its brightest, so the cut is
+   hidden inside the flash rather than seen as a hard jump.
+   -------------------------------------------------------------------------- */
+.warp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.02);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--crt-text) 0%, var(--role-developer) 22%, #0A0806 72%);
+}
+.warp-overlay.is-warping {
+  animation: warpJump 0.9s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+@keyframes warpJump {
+  0%   { opacity: 0;   transform: scale(0.02); border-radius: 50%; }
+  32%  { opacity: 1;   transform: scale(1.3);  border-radius: 50%; }
+  55%  { opacity: 1;   transform: scale(3.2);  border-radius: 0%; }
+  100% { opacity: 0;   transform: scale(3.6);  border-radius: 0%; }
+}
+
+
+/* ===== game.css ===== */
+/* ==========================================================================
+   Cantrick — in-world overlay: HUD, team bar, prompts, toast
+   --------------------------------------------------------------------------
+   The HUD is a strip of beige hardware bolted over the office view. It reads
+   as a control panel on a machine, not as a floating glass card.
+   ========================================================================== */
+
+#screen-game {
+  position: fixed;
+  inset: 0;
+  display: none;
+}
+#screen-game.is-open { display: block; }
+
+#stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- HUD ----------------------------------------------------------------- */
+.hud {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  right: var(--s-3);
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  gap: var(--s-2);
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.gauge {
+  background: var(--putty);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  box-shadow: var(--lift-sm);
+  padding: var(--s-2) var(--s-3);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.gauge .v {
+  font-family: var(--f-mono);
+  font-weight: 700;
+  font-size: var(--t-md);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.gauge--dept { flex: 1 1 160px; }
+.gauge--dept .v {
+  font-family: var(--f-sans);
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* focus meter — segmented, like a battery on old hardware */
+.meter {
+  display: flex;
+  gap: 2px;
+  width: 132px;
+  height: 14px;
+  padding: 2px;
+  background: var(--crt-glass);
+  border: 1px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+}
+.meter i {
+  flex: 1;
+  background: var(--ok);
+  transition: background 0.25s;
+}
+.meter i.off { background: rgba(255,255,255,0.07); }
+.meter.low i:not(.off)  { background: var(--warn); }
+.meter.crit i:not(.off) { background: var(--fault); }
+
+/* --- team bar: four desk nameplates -------------------------------------- */
+.team-bar {
+  position: absolute;
+  bottom: var(--s-3);
+  left: var(--s-3);
+  z-index: 10;
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  max-width: calc(100% - var(--s-6));
+}
+.nameplate {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--f-sans);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--putty);
+  border: 2px solid var(--rule-hard);
+  border-bottom-width: 5px;
+  border-radius: var(--r-sm);
+  padding: 5px 10px;
+  cursor: pointer;
+  box-shadow: var(--lift-sm);
+  transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+}
+.nameplate .pip {
+  width: 9px; height: 9px;
+  border-radius: var(--r-pill);
+  background: currentColor;
+  flex: none;
+}
+.nameplate .tick { color: var(--ok); font-weight: 700; }
+.nameplate.developer { border-bottom-color: var(--role-developer); color: var(--role-developer); }
+.nameplate.tester    { border-bottom-color: var(--role-tester);    color: var(--role-tester); }
+.nameplate.debugger  { border-bottom-color: var(--role-debugger);  color: var(--role-debugger); }
+.nameplate.client    { border-bottom-color: var(--role-client);    color: var(--role-client); }
+.nameplate .nm { color: var(--ink); }
+
+.nameplate.is-waiting { opacity: 0.5; }
+.nameplate.is-up {
+  background: var(--paper);
+  animation: plate-up 1.6s ease-in-out infinite;
+}
+.nameplate.is-up:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--shadow-hard); }
+@keyframes plate-up {
+  0%, 100% { box-shadow: var(--lift-sm); }
+  50%      { box-shadow: 2px 2px 0 var(--shadow-hard), 0 0 0 3px var(--warn-wash); }
+}
+
+/* --- interact prompt ------------------------------------------------------ */
+.prompt {
+  position: absolute;
+  bottom: 172px;   /* clear of the player, below the desk labels */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: none;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-sm);
+  background: var(--paper);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  padding: var(--s-2) var(--s-3);
+  box-shadow: var(--lift-sm);
+  white-space: nowrap;
+}
+.prompt.is-open { display: flex; animation: prompt-bob 1.4s ease-in-out infinite; }
+@keyframes prompt-bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, -5px); }
+}
+
+/* --- toast ---------------------------------------------------------------- */
+.toast {
+  position: fixed;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  display: none;
+  max-width: min(520px, calc(100vw - var(--s-6)));
+  font-size: var(--t-base);
+  font-weight: 500;
+  color: var(--on-dark);
+  background: var(--ink);
+  border-radius: var(--r-sm);
+  border-left: 5px solid var(--role-developer);
+  padding: var(--s-3) var(--s-4);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+}
+.toast.is-open { display: block; animation: toast-in 0.3s ease-out; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 700px) {
+  .gauge--dept { flex-basis: 100%; order: -1; }
+  .meter { width: 96px; }
+  .team-bar { gap: var(--s-1); }
+  .nameplate { font-size: var(--t-xs); padding: 4px 7px; }
+}
+
+
+/* ===== challenge.css ===== */
+/* ==========================================================================
+   Cantrick — the work ticket
+   --------------------------------------------------------------------------
+   This is where the learning actually happens, so it gets the most structure.
+   The old build put brief, code, question, input and feedback in one
+   undifferentiated column. Here each has its own surface and the eye can find
+   the task without reading everything above it.
+   ========================================================================== */
+
+#ticket-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-4);
+  background: rgba(25,22,17,0.72);
+  backdrop-filter: blur(3px);
+}
+#ticket-overlay.is-open { display: flex; }
+
+.work-ticket {
+  width: 100%;
+  max-width: 720px;
+  max-height: min(92vh, 900px);
+  display: flex;
+  flex-direction: column;
+  background: var(--putty-lit);
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  box-shadow: 7px 7px 0 rgba(0,0,0,0.35);
+  overflow: hidden;
+}
+
+/* --- header: who you are right now --------------------------------------- */
+.ticket-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--ink);
+  color: var(--on-dark);
+  flex: none;
+}
+.ticket-bar .station-no {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
+  color: var(--on-dark-soft);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.ticket-bar h2 {
+  font-size: var(--t-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  min-width: 0;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-radius: var(--r-sm);
+  padding: 4px 9px;
+  flex: none;
+}
+.role-badge.developer { background: var(--role-developer); }
+.role-badge.tester    { background: var(--role-tester);    color: var(--paper); }
+.role-badge.debugger  { background: var(--role-debugger);  color: var(--paper); }
+.role-badge.client    { background: var(--role-client);    color: var(--paper); }
+
+/* --- handoff pipeline ----------------------------------------------------- */
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  flex-wrap: wrap;
+  padding: var(--s-2) var(--s-4);
+  background: var(--putty-dim);
+  border-bottom: 2px solid var(--rule-hard);
+  flex: none;
+}
+.pipeline .node {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+.pipeline .node.is-active {
+  color: var(--ink);
+  font-weight: 700;
+  background: var(--paper);
+  border-color: var(--rule-hard);
+}
+.pipeline .arrow { color: var(--rule); font-size: var(--t-xs); }
+
+/* --- scrolling body ------------------------------------------------------- */
+.ticket-scroll {
+  overflow-y: auto;
+  padding: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+/* the brief, as a quoted note from the team */
+.brief {
+  font-size: var(--t-base);
+  line-height: 1.6;
+  color: var(--ink);
+  border-left: 4px solid var(--rule);
+  padding-left: var(--s-3);
+}
+
+/* an attached file from a teammate */
+.attachment { display: flex; flex-direction: column; }
+.attachment[hidden] { display: none !important; }
+.attachment .tab {
+  align-self: flex-start;
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  padding: 3px 10px;
+}
+.attachment .code-block { border-top-left-radius: 0; }
+
+/* the actual task — the one thing that must never get lost */
+.task {
+  font-size: var(--t-md);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--warn-wash);
+  border: 2px solid var(--role-developer);
+  border-radius: var(--r-sm);
+  padding: var(--s-3) var(--s-4);
+}
+.task::before {
+  content: "Your task";
+  display: block;
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: var(--s-2);
+}
+
+/* --- verdict: the judgement call before the proof ------------------------- */
+.verdict[hidden] { display: none !important; }
+.verdict { display: flex; flex-direction: column; gap: var(--s-2); }
+.verdict > p { font-size: var(--t-base); font-weight: 500; }
+.verdict-options { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+.verdict-options .btn { flex: 1 1 200px; }
+.verdict-options .btn.picked-ok    { background: var(--ok);    color: var(--paper); }
+.verdict-options .btn.picked-fault { background: var(--fault); color: var(--paper); }
+
+/* --- the editor ----------------------------------------------------------- */
+.answer[hidden] { display: none !important; }
+.answer { display: flex; flex-direction: column; gap: var(--s-2); }
+
+.editor {
+  border: 2px solid var(--rule-hard);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--crt-glass);
+}
+.editor-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 5px var(--s-3);
+  background: #2E281D;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.editor-bar .label { color: var(--on-dark-soft); }
+.editor-bar .lamp {
+  width: 8px; height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--role-developer);
+  margin-left: auto;
+  box-shadow: 0 0 6px var(--crt-glow);
+}
+#code-input {
+  display: block;
+  width: 100%;
+  min-height: 132px;
+  resize: vertical;
+  font-family: var(--f-mono);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  color: var(--crt-text);
+  caret-color: var(--crt-text);
+  background: transparent;
+  border: none;
+  padding: var(--s-3);
+  direction: ltr;
+  text-align: left;
+  tab-size: 4;
+}
+#code-input:focus { outline: none; }
+#code-input::placeholder { color: rgba(242,181,71,0.34); }
+#code-input:disabled { opacity: 0.55; }
+
+.answer-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.answer-tools .spacer { flex: 1; }
+
+.hint-line {
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  min-height: 1.4em;
+}
+.hint-line code {
+  font-family: var(--f-mono);
+  font-size: 0.95em;
+  background: var(--putty-dim);
+  padding: 0 4px;
+  border-radius: var(--r-sm);
+}
+
+.example[hidden] { display: none !important; }
+.example {
+  color: var(--on-dark-soft);
+  font-size: var(--t-sm);
+}
+
+/* --- feedback ------------------------------------------------------------- */
+.verdict-note { font-size: var(--t-sm); color: var(--ink-soft); min-height: 1.3em; }
+
+.result[hidden] { display: none !important; }
+.result {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  font-size: var(--t-base);
+  line-height: 1.55;
+  border: 2px solid var(--rule);
+  border-radius: var(--r-sm);
+  padding: var(--s-3) var(--s-4);
+  animation: result-in 0.3s ease-out;
+}
+@keyframes result-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.result::before {
+  font-family: var(--f-mono);
+  font-weight: 700;
+  font-size: var(--t-md);
+  line-height: 1.3;
+  flex: none;
+}
+.result.is-working { background: var(--putty-dim); border-color: var(--rule); }
+.result.is-working::before { content: "\2026"; color: var(--ink-faint); }
+.result.is-pass { background: var(--ok-wash); border-color: var(--ok); }
+.result.is-pass::before { content: "\2713"; color: var(--ok); }
+.result.is-fail { background: var(--fault-wash); border-color: var(--fault); }
+.result.is-fail::before { content: "\2715"; color: var(--fault); }
+
+/* --- footer --------------------------------------------------------------- */
+.ticket-foot {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  background: var(--putty-dim);
+  border-top: 2px solid var(--rule-hard);
+}
+.ticket-foot [hidden] { display: none !important; }
+
+@media (max-width: 600px) {
+  .ticket-bar { flex-wrap: wrap; }
+  .ticket-bar .station-no { margin-left: 0; width: 100%; }
+  .verdict-options .btn { flex-basis: 100%; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ======================= splash / title ======================= -->
+<div class="screen is-open" id="screen-splash">
+  <div class="splash-sheet">
+    <div class="portal" aria-hidden="true"><span class="portal-core"></span></div>
+    <div class="wordmark splash-wordmark">Cantrick<span class="dot">.</span></div>
+    <p class="splash-tag">Your first job in tech.</p>
+    <button class="btn btn--primary btn--lg" id="btn-launch" type="button">Step through</button>
+  </div>
+</div>
+
+<!-- warp transition, sits above everything while it plays -->
+<div class="warp-overlay" id="warp-overlay" aria-hidden="true"></div>
+
+<!-- ======================= induction / start ======================= -->
+<div class="screen" id="screen-start">
+  <div class="sheet">
+
+    <div class="letterhead">
+      <div>
+        <div class="label">Employee induction &mdash; day one</div>
+        <div class="wordmark">Cantrick<span class="dot">.</span></div>
+      </div>
+      <div class="meta">
+        <span class="label">Team</span>
+        <strong>Nova</strong>
+        <span class="label">Client</span>
+        <strong>City Hospital</strong>
+      </div>
+    </div>
+
+    <div class="memo">
+      <div class="memo-body">
+        <span class="label">Level 1 &middot; Juniors</span>
+        <h2>Welcome aboard &mdash; you're hired!</h2>
+        <p class="lead">Your first day. Your first job. Let's go.</p>
+        <p>Nova team &rarr; build <strong>SmartReception</strong> for City Hospital, in <strong>Python</strong>.</p>
+        <p>Five departments. Every desk, a new role. Trust your teammate's code &mdash; or catch what's broken.</p>
+        <p class="hint">Lit nameplates below show whose turn it is. Click one to jump to their desk.</p>
+
+        <div class="controls">
+          <div class="ctl">
+            <span><span class="key">A</span> <span class="key">D</span></span>
+            <span>walk</span>
+          </div>
+          <div class="ctl">
+            <span class="key">Space</span>
+            <span>jump</span>
+          </div>
+          <div class="ctl">
+            <span class="key">E</span>
+            <span>use the desk you are standing at</span>
+          </div>
+        </div>
+
+        <div>
+          <button class="btn btn--primary btn--lg" id="btn-begin" type="button">Clock in</button>
+        </div>
+      </div>
+
+      <div class="crew">
+        <div class="label">Your team</div>
+        <div class="crew-card developer">
+          <span class="badge-photo" aria-hidden="true">&#128104;&#8205;&#128187;</span>
+          <span>
+            <span class="who">Sara</span>
+            <span class="role">Developer &mdash; writes it</span>
+          </span>
+        </div>
+        <div class="crew-card tester">
+          <span class="badge-photo" aria-hidden="true">&#129514;</span>
+          <span>
+            <span class="who">Omar</span>
+            <span class="role">Tester &mdash; proves it</span>
+          </span>
+        </div>
+        <div class="crew-card debugger">
+          <span class="badge-photo" aria-hidden="true">&#128030;</span>
+          <span>
+            <span class="who">Laila</span>
+            <span class="role">Debugger &mdash; fixes it</span>
+          </span>
+        </div>
+        <div class="crew-card client">
+          <span class="badge-photo" aria-hidden="true">&#127973;</span>
+          <span>
+            <span class="who">Mr. Adel</span>
+            <span class="role">Client &mdash; signs it off</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================= floor directory ======================= -->
+<div class="screen" id="screen-floors">
+  <div class="sheet">
+    <div class="letterhead">
+      <div>
+        <div class="label">Cantrick HQ</div>
+        <div class="wordmark" style="font-size:var(--t-2xl)">Floor directory</div>
+      </div>
+      <div class="meta">
+        <span class="label">Project</span>
+        <strong>SmartReception</strong>
+      </div>
+    </div>
+
+    <div class="directory" id="directory"></div>
+
+    <div>
+      <button class="btn btn--quiet" id="btn-back-start" type="button">Back to induction</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= the office ======================= -->
+<div id="screen-game">
+  <canvas id="stage"></canvas>
+
+  <div class="hud">
+    <div class="gauge">
+      <span class="label">Focus</span>
+      <div class="meter" id="focus-meter" role="img" aria-label="Focus remaining"></div>
+    </div>
+    <div class="gauge">
+      <span class="label">Desks</span>
+      <span class="v" id="hud-desks">0/5</span>
+    </div>
+    <div class="gauge">
+      <span class="label">Points</span>
+      <span class="v" id="hud-points">0</span>
+    </div>
+    <div class="gauge gauge--dept">
+      <span class="label">Department</span>
+      <span class="v" id="hud-dept">&mdash;</span>
+    </div>
+  </div>
+
+  <div class="prompt" id="prompt">
+    <span class="key">E</span>
+    <span id="prompt-text">Take this desk</span>
+  </div>
+
+  <div class="team-bar" id="team-bar"></div>
+</div>
+
+<!-- ======================= the work ticket ======================= -->
+<div id="ticket-overlay" role="dialog" aria-modal="true" aria-labelledby="ticket-title">
+  <div class="work-ticket">
+
+    <div class="ticket-bar">
+      <span class="role-badge developer" id="role-badge">Developer</span>
+      <h2 id="ticket-title">Desk</h2>
+      <span class="station-no" id="ticket-count"></span>
+    </div>
+
+    <div class="pipeline" id="pipeline"></div>
+
+    <div class="ticket-scroll">
+      <p class="brief" id="ticket-brief"></p>
+
+      <div class="attachment" id="attachment" hidden>
+        <span class="tab" id="attachment-tab">Attached</span>
+        <div class="code-block" id="attachment-code"></div>
+      </div>
+
+      <div class="task" id="ticket-task"></div>
+
+      <div class="verdict" id="verdict" hidden>
+        <p>Before you prove anything &mdash; does this code look right to you?</p>
+        <div class="verdict-options">
+          <button class="btn" type="button" data-verdict="ok">It looks correct</button>
+          <button class="btn" type="button" data-verdict="bug">I think there is a bug</button>
+        </div>
+        <p class="verdict-note" id="verdict-note"></p>
+      </div>
+
+      <div class="answer" id="answer">
+        <div class="editor">
+          <div class="editor-bar">
+            <span class="label">python</span>
+            <span class="lamp" aria-hidden="true"></span>
+          </div>
+          <textarea id="code-input" spellcheck="false" autocomplete="off"
+                    autocapitalize="off" autocorrect="off"
+                    placeholder="Write your Python here..."></textarea>
+        </div>
+
+        <div class="answer-tools">
+          <button class="btn btn--quiet btn--sm" id="btn-example" type="button">Show me an example</button>
+          <span class="spacer"></span>
+          <button class="btn btn--go" id="btn-submit" type="button">Submit</button>
+        </div>
+
+        <div class="code-block example" id="example-box" hidden></div>
+        <p class="hint-line" id="hint-line"></p>
+      </div>
+
+      <div class="result" id="result" hidden></div>
+    </div>
+
+    <div class="ticket-foot">
+      <button class="btn btn--quiet btn--sm" id="btn-walk-away" type="button">Back to the floor</button>
+      <button class="btn btn--primary" id="btn-continue" type="button" hidden>Continue</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================= end of department ======================= -->
+<div class="screen" id="screen-complete">
+  <div class="ticket">
+    <div class="ticket-head">
+      <div>
+        <div class="label">Job ticket &mdash; closed</div>
+        <h1 id="complete-title">Department complete</h1>
+      </div>
+    </div>
+    <div class="ticket-body">
+      <p id="complete-text"></p>
+      <hr class="perf">
+      <div class="readout">
+        <div class="readout-row"><span class="label">Client review</span><span class="rating" id="complete-rating"></span></div>
+        <div class="readout-row"><span class="label">Points earned</span><span class="v" id="complete-points">0</span></div>
+        <div class="readout-row"><span class="label">Focus left</span><span class="v" id="complete-focus">0%</span></div>
+      </div>
+      <hr class="perf">
+      <div class="ticket-actions">
+        <button class="btn btn--primary" id="btn-next-dept" type="button">Next department</button>
+        <button class="btn btn--quiet" id="btn-back-floors" type="button">Floor directory</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= delivery ======================= -->
+<div class="screen" id="screen-win">
+  <div class="ticket">
+    <div class="ticket-head">
+      <div>
+        <div class="label">Delivery note</div>
+        <h1>SmartReception shipped</h1>
+      </div>
+    </div>
+    <div class="ticket-body">
+      <span class="stamp">Accepted</span>
+      <p>City Hospital has taken delivery of SmartReception &mdash; built, tested, debugged and signed off by the Nova team. That was your first project.</p>
+      <hr class="perf">
+      <div class="readout">
+        <div class="readout-row"><span class="label">Total points</span><span class="v" id="win-points">0</span></div>
+        <div class="readout-row"><span class="label">Departments</span><span class="v">5 / 5</span></div>
+      </div>
+      <hr class="perf">
+      <div class="ticket-actions">
+        <button class="btn btn--primary" id="btn-replay" type="button">Start over</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== engine/state.js ===== */
+const Mod_engine_state = (function() {
+/**
+ * All mutable game state, in one place.
+ *
+ * Everything else imports from here rather than passing state around, which
+ * keeps the module graph shallow. The arrays are exported as properties of
+ * `world` (not as bare arrays) so they can be replaced wholesale when a
+ * department is rebuilt without every importer holding a stale reference.
+ */
+
+const canvas = document.getElementById('stage');
+const ctx = canvas.getContext('2d');
+
+/**
+ * Viewport in CSS pixels.
+ *
+ * The canvas backing store is scaled by devicePixelRatio so text stays sharp,
+ * which means canvas.width is NOT the size the drawing code should reason
+ * about. Everything that needs screen dimensions reads view.w / view.h.
+ */
+const view = { w: 0, h: 0, dpr: 1 };
+
+const game = {
+  level: 0,
+  worldWidth: 3000,
+  groundY: 0,
+  cameraX: 0,
+  points: 0,
+  totalPoints: 0,
+  focus: 100,
+  desksDone: 0,
+  running: false,
+  paused: false,
+  keys: {},
+  particles: [],
+  motes: [],
+  unlocked: [true, false, false, false, false],
+  completed: [false, false, false, false, false],
+  submitted: {},
+  frameId: null,
+  time: 0
+};
+
+/**
+ * The player. A CRT-headed courier on a single castor — the physics is still
+ * a circle of `radius`, the drawing just has more personality than a ball.
+ */
+const player = {
+  x: 100,
+  y: 0,
+  radius: 22,
+  vx: 0,
+  vy: 0,
+  wheel: 0,      // wheel rotation, driven by horizontal speed
+  lean: 0,       // smoothed body tilt
+  onGround: false,
+  blink: 0,
+  mood: 'ok',      // 'ok' | 'hurt' | 'happy'
+  moodTimer: 0
+};
+
+const world = {
+  desks: [],
+  ledges: [],
+  hazards: [],
+  fixtures: []
+};
+
+function resetRun() {
+  game.points = 0;
+  game.focus = 100;
+  game.desksDone = 0;
+  game.paused = false;
+  game.keys = {};
+  game.submitted = {};
+  game.particles = [];
+  player.vx = 0;
+  player.vy = 0;
+  player.wheel = 0;
+  player.lean = 0;
+  player.mood = 'ok';
+}
+
+function spark(x, y, color, count = 12, spread = 8) {
+  for (let i = 0; i < count; i++) {
+    game.particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * spread,
+      vy: -Math.random() * spread * 0.8,
+      life: 30 + Math.random() * 25,
+      maxLife: 55,
+      size: 2 + Math.random() * 2,
+      color
+    });
+  }
+}
+
+return { resetRun, spark, canvas, ctx, view, game, player, world };
+})();
+
+/* ===== engine/validators.js ===== */
+const Mod_engine_validators = (function() {
+/**
+ * Answer matching.
+ *
+ * These are deliberately forgiving about whitespace and case, so a learner is
+ * never marked wrong for putting a space after `int`. They are NOT forgiving
+ * about intent: every challenge lists the tokens that must actually be there.
+ *
+ * Known limitation: this matches text, it does not run Python. Code containing
+ * the right words in the wrong order still passes. Replacing this with Pyodide
+ * is the single biggest correctness upgrade available to the project — see
+ * README, "Where this goes next".
+ */
+
+/** Collapse runs of whitespace, lowercase. Keeps word boundaries. */
+function norm(s) {
+  return (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+/** Strip ALL whitespace, so "int (input(" and "int(input(" match alike. */
+function tight(s) {
+  return (s || '').toLowerCase().replace(/\s+/g, '');
+}
+
+/** Every token must appear. */
+function hasAll(str, tokens) {
+  const n = tight(str);
+  return tokens.every(t => n.includes(tight(t)));
+}
+
+/** At least one token must appear. */
+function hasAny(str, tokens) {
+  const n = tight(str);
+  return tokens.some(t => n.includes(tight(t)));
+}
+
+return { norm, tight, hasAll, hasAny };
+})();
+
+/* ===== data/team.js ===== */
+const Mod_data_team = (function() {
+/**
+ * The Nova team.
+ *
+ * Roles are the spine of the product: the same four keys drive the badge
+ * colours, the desk colours in-world, the nameplates, and the handoff copy.
+ * Adding a fifth role means adding it here, in tokens.css, and nowhere else.
+ */
+
+const ROLE_ORDER = ['developer', 'tester', 'debugger', 'client'];
+
+const TEAM = {
+  developer: {
+    name: 'Sara',
+    title: 'Developer',
+    glyph: '\u{1F468}‍\u{1F4BB}',
+    blurb: 'writes it'
+  },
+  tester: {
+    name: 'Omar',
+    title: 'Tester',
+    glyph: '\u{1F9EA}',
+    blurb: 'proves it'
+  },
+  debugger: {
+    name: 'Laila',
+    title: 'Debugger',
+    glyph: '\u{1F41E}',
+    blurb: 'fixes it'
+  },
+  client: {
+    name: 'Mr. Adel',
+    title: 'Client',
+    glyph: '\u{1F3E5}',
+    blurb: 'signs it off'
+  }
+};
+
+/** Canvas needs literal hex; these mirror --role-* in tokens.css. */
+const ROLE_COLOR = {
+  developer: '#FFB627',
+  tester:    '#1FC17E',
+  debugger:  '#FF4757',
+  client:    '#3E8EF7'
+};
+
+/* --------------------------------------------------------------------------
+   Handoff copy. Every string a teammate "says" lives here so the voice of the
+   game can be tuned without touching logic.
+   -------------------------------------------------------------------------- */
+
+const SUBMIT_LABEL = {
+  developer: `Send to ${TEAM.tester.name}`,
+  tester:    'Run the test',
+  debugger:  `Send the fix to ${TEAM.tester.name}`,
+  client:    'Sign it off'
+};
+
+const WORKING_LABEL = {
+  developer: `${TEAM.tester.name} is reading it...`,
+  tester:    'Running your test...',
+  debugger:  `${TEAM.tester.name} is re-checking the fix...`,
+  client:    `The team is waiting on ${TEAM.client.name}...`
+};
+
+const PASS_LABEL = {
+  developer: `${TEAM.tester.name} has it. Nice work, ${TEAM.developer.name}.`,
+  tester:    `Test passed. ${TEAM.tester.name} confirms the logic holds.`,
+  debugger:  `${TEAM.debugger.name}'s fix checks out. Back to ${TEAM.tester.name}.`,
+  client:    `${TEAM.client.name} approves. The whole team moves forward.`
+};
+
+const FAIL_LABEL = {
+  developer: `${TEAM.tester.name} sent it back &mdash; it does not pass review yet.`,
+  tester:    'That does not prove it yet. Try again.',
+  debugger:  'The fix is not right yet.',
+  client:    `${TEAM.client.name} is not satisfied &mdash; the sign-off does not go through.`
+};
+
+return { ROLE_ORDER, TEAM, ROLE_COLOR, SUBMIT_LABEL, WORKING_LABEL, PASS_LABEL, FAIL_LABEL };
+})();
+
+/* ===== data/levels.js ===== */
+const Mod_data_levels = (function() {
+/**
+ * The five departments.
+ *
+ * Each one is a real room in the Cantrick building, not a reskinned void.
+ * The palette moves through a working day: a bright lobby in the morning,
+ * a dim server room when things go wrong, low amber light on the floor where
+ * you finally ship. Difficulty rises with it.
+ */
+
+const TOTAL_LEVELS = 5;
+
+const LEVELS = [
+  {
+    name: 'Login Department',
+    short: 'Login',
+    brief: 'Build the receptionist login: username, password, and the access check.',
+    worldWidth: 3000,
+    obstacleCount: 3,
+    ledgeCount: 0,
+    difficulty: 1,
+    fixtures: ['plant', 'cabinet', 'cooler', 'clock'],
+    palette: {
+      wallTop:   '#E4DCCB',
+      wallBottom:'#CFC4AE',
+      trim:      '#B4A98F',
+      floor:     '#5A625E',
+      floorDark: '#3E4644',
+      skirting:  '#9A9078',
+      light:     'rgba(255,240,205,0.30)',
+      dust:      'rgba(255,246,224,0.5)'
+    }
+  },
+  {
+    name: 'Patient Data Department',
+    short: 'Patient data',
+    brief: 'Collect the patient record with input(): name, age, injury, emergency status.',
+    worldWidth: 3300,
+    obstacleCount: 4,
+    ledgeCount: 2,
+    difficulty: 1.2,
+    fixtures: ['cabinet', 'cabinet', 'boxes', 'plant', 'clock'],
+    palette: {
+      wallTop:   '#DFD8BE',
+      wallBottom:'#C6BC9C',
+      trim:      '#A79B78',
+      floor:     '#565A48',
+      floorDark: '#3B3F31',
+      skirting:  '#8E8465',
+      light:     'rgba(255,238,190,0.26)',
+      dust:      'rgba(255,244,214,0.45)'
+    }
+  },
+  {
+    name: 'Triage & Booking Department',
+    short: 'Triage & booking',
+    brief: 'Decide where each patient is booked, from age, emergency status and injury.',
+    worldWidth: 3600,
+    obstacleCount: 5,
+    ledgeCount: 3,
+    difficulty: 1.5,
+    fixtures: ['whiteboard', 'plant', 'cabinet', 'cooler', 'clock'],
+    palette: {
+      wallTop:   '#D3D8DE',
+      wallBottom:'#B2BAC6',
+      trim:      '#939DAC',
+      floor:     '#454E5A',
+      floorDark: '#2F363F',
+      skirting:  '#7C8695',
+      light:     'rgba(225,240,255,0.24)',
+      dust:      'rgba(233,243,255,0.45)'
+    }
+  },
+  {
+    name: 'Bug Fixing Department',
+    short: 'Bug fixing',
+    brief: 'Something is booking children into the adult ward. Find it and fix it.',
+    worldWidth: 4000,
+    obstacleCount: 7,
+    ledgeCount: 4,
+    difficulty: 1.8,
+    fixtures: ['rack', 'rack', 'boxes', 'rack', 'clock'],
+    palette: {
+      wallTop:   '#3B3038',
+      wallBottom:'#2A2228',
+      trim:      '#4E3F46',
+      floor:     '#241D22',
+      floorDark: '#171216',
+      skirting:  '#584650',
+      light:     'rgba(196,68,47,0.20)',
+      dust:      'rgba(255,190,180,0.35)',
+      dark:      true
+    }
+  },
+  {
+    name: 'Final Delivery Department',
+    short: 'Delivery',
+    brief: 'Connect it all together and hand SmartReception to City Hospital.',
+    worldWidth: 4400,
+    obstacleCount: 8,
+    ledgeCount: 5,
+    difficulty: 2,
+    fixtures: ['crate', 'plant', 'crate', 'clock', 'cabinet'],
+    palette: {
+      wallTop:   '#E8D4AE',
+      wallBottom:'#C99F68',
+      trim:      '#AE8752',
+      floor:     '#5C4B36',
+      floorDark: '#3E3324',
+      skirting:  '#9B7B4C',
+      light:     'rgba(255,214,140,0.38)',
+      dust:      'rgba(255,232,190,0.55)'
+    }
+  }
+];
+
+return { TOTAL_LEVELS, LEVELS };
+})();
+
+/* ===== ui/toast.js ===== */
+const Mod_ui_toast = (function() {
+const el = document.getElementById('toast');
+const ticket = document.getElementById('ticket-overlay');
+let timer = null;
+
+const ACCENT = {
+  info:  'var(--role-developer)',
+  pass:  'var(--ok)',
+  fault: 'var(--fault)',
+  handoff: 'var(--role-client)'
+};
+
+/**
+ * A short, non-blocking message. Kept deliberately quiet — the toast reports
+ * what happened, it never asks for anything.
+ */
+function showToast(message, tone = 'info') {
+  // While a work ticket is open it covers the toast's position, and the ticket
+  // already reports its own outcome — a toast on top of it is both duplicate
+  // information and a collision.
+  if (ticket.classList.contains('is-open')) return;
+
+  el.textContent = message;
+  el.style.borderLeftColor = ACCENT[tone] || ACCENT.info;
+  el.classList.add('is-open');
+
+  clearTimeout(timer);
+  timer = setTimeout(() => el.classList.remove('is-open'), 2600);
+}
+
+return { showToast };
+})();
+
+/* ===== data/challenges.js ===== */
+const Mod_data_challenges = (function() {
+const { norm, hasAll, hasAny } = Mod_engine_validators;
+
+/**
+ * Every desk in the building, grouped by department.
+ *
+ * Shape of a desk:
+ *   title        name on the desk nameplate, in-world and on the ticket
+ *   role         which teammate you become here (drives colour + copy)
+ *   story        the brief, in the team's voice
+ *   question     what you are actually asked to write
+ *   placeholder  the worked example, shown on request or after 2 misses
+ *   hint         one nudge, shown after a miss
+ *   validate     (raw) => boolean
+ *   code         optional pre-written snippet, as pre-highlighted HTML
+ *   sourceIndex  optional: show the code submitted at that desk instead.
+ *                Its presence on a tester/client desk is what triggers the
+ *                judgement call before the proof — the mechanic the whole
+ *                product rests on.
+ *   checkPoints  optional: itemised reasons a wrong answer was wrong, so
+ *                feedback names the gap instead of just saying "no"
+ */
+const CHALLENGES = [
+
+  /* ===== 1. Login Department ============================================ */
+  [
+    {
+      title: 'Username Desk',
+      role: 'developer',
+      story: 'Before anything else, the receptionist has to log in. City Hospital wants a Python program that asks for a username.',
+      question: 'Write the Python line that asks the receptionist for a username and stores it in a variable called username.',
+      placeholder: 'username = input("Enter username: ")',
+      hint: 'Use input() and store the result in a variable named username.',
+      validate: (raw) => hasAll(raw, ['username', 'input(', '='])
+    },
+    {
+      title: 'Password Desk',
+      role: 'developer',
+      story: "A username on its own isn't enough — the system needs a password field too.",
+      question: 'Write the Python line that asks for a password and stores it in a variable called password.',
+      placeholder: 'password = input("Enter password: ")',
+      hint: 'Use input() and store the result in a variable named password.',
+      validate: (raw) => hasAll(raw, ['password', 'input(', '='])
+    },
+    {
+      title: 'Access Check Desk',
+      role: 'developer',
+      story: 'Now the system has to decide: is this receptionist allowed in, or not?',
+      question: 'Write an if/else statement that checks if username == "admin" and password == "1234", and sets a variable called access to "granted" or "denied".',
+      placeholder: 'if username == "admin" and password == "1234":\n    access = "granted"\nelse:\n    access = "denied"',
+      hint: 'Use if ... and ... : access = "granted", else access = "denied".',
+      validate: (raw) => hasAll(raw, ['if', 'username', 'password', '==', 'access']) && hasAny(raw, ['else', 'elif'])
+    },
+    {
+      title: 'QA Sign-Off Desk',
+      role: 'tester',
+      story: "Sara just finished the access check and it landed in your queue this second. Take a look, Omar — is it actually correct? Then prove it.",
+      sourceIndex: 2,
+      question: 'Put on your Tester hat: write a Python test using assert that proves access equals "granted" when username is "admin" and password is "1234".',
+      placeholder: 'username = "admin"\npassword = "1234"\nassert access == "granted"',
+      hint: 'Set username and password to the correct values, then assert access == "granted".',
+      validate: (raw) => hasAll(raw, ['assert', 'access', 'granted']),
+      checkPoints: [
+        { desc: 'you need assert to actually prove something, not just describe it', test: (raw) => /assert/i.test(raw) },
+        { desc: 'your assert should check the access variable', test: (raw) => /access/i.test(raw) },
+        { desc: 'it needs to check that access equals "granted"', test: (raw) => /granted/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Client Review Desk',
+      role: 'client',
+      story: "Omar's test passed, so Sara's login code goes straight to Mr. Adel at City Hospital for a look — same code, no rewrite. The client isn't waiting at the end of the line; he's checking in right now with the team.",
+      sourceIndex: 2,
+      question: 'As the Client: write Python that prints an approval message once access equals "granted", confirming City Hospital signs off on the login feature.',
+      placeholder: 'if access == "granted":\n    print("Approved by City Hospital")',
+      hint: 'Check if access == "granted", then print() a message that mentions being approved.',
+      validate: (raw) => hasAll(raw, ['if', 'access', 'granted', 'print(']) && hasAny(raw, ['approved', 'approve']),
+      checkPoints: [
+        { desc: 'start with an if statement', test: (raw) => /\bif\b/i.test(raw) },
+        { desc: 'check the access variable', test: (raw) => /access/i.test(raw) },
+        { desc: 'make sure it checks for "granted"', test: (raw) => /granted/i.test(raw) },
+        { desc: 'use print() to show your message', test: (raw) => /print\s*\(/i.test(raw) },
+        { desc: "mention that it's approved in your message", test: (raw) => /approv/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Welcome Desk',
+      role: 'developer',
+      story: 'Once access is granted, the receptionist should see a welcome message on screen.',
+      question: 'Write the Python print() line that shows a welcome message to the receptionist, containing the word "Welcome".',
+      placeholder: 'print("Welcome to City Hospital Reception System")',
+      hint: 'Use print() and make sure the text contains the word Welcome.',
+      validate: (raw) => hasAll(raw, ['print(', 'welcome'])
+    }
+  ],
+
+  /* ===== 2. Patient Data Department ===================================== */
+  [
+    {
+      title: 'Patient Name Desk',
+      role: 'developer',
+      story: 'A new patient just walked in. The system needs to record their name first.',
+      question: "Write the Python line that asks for the patient's name and stores it in a variable called patient_name.",
+      placeholder: 'patient_name = input("Enter patient name: ")',
+      hint: 'Use input() and store the result in patient_name.',
+      validate: (raw) => hasAll(raw, ['patient_name', 'input(', '='])
+    },
+    {
+      title: 'Patient Age Desk',
+      role: 'developer',
+      story: 'Age decides a lot in triage — child or adult — so it has to be a number, not text.',
+      question: "Write the Python line that asks for the patient's age, converts it to an integer, and stores it in a variable called age.",
+      placeholder: 'age = int(input("Enter patient age: "))',
+      hint: 'Wrap input() with int() so age is a whole number, e.g. age = int(input(...)).',
+      validate: (raw) => hasAll(raw, ['age', 'int(', 'input(', '='])
+    },
+    {
+      title: 'Data QA Desk',
+      role: 'tester',
+      story: "Sara's age code just landed with you, Omar. As the tester, you don't trust the age field until you have proven it really is a number, not text.",
+      sourceIndex: 1,
+      question: 'As the Tester: write a Python check using assert (or isinstance) proving that age is really an int, not a string.',
+      placeholder: 'age = int(input("Enter patient age: "))\nassert isinstance(age, int)',
+      hint: 'Use assert isinstance(age, int) to prove age is a number.',
+      validate: (raw) => hasAll(raw, ['age', 'int']) && hasAny(raw, ['assert', 'isinstance']),
+      checkPoints: [
+        { desc: 'mention the age variable', test: (raw) => /age/i.test(raw) },
+        { desc: "check that it's really an int type, not just a number-looking string", test: (raw) => /int/i.test(raw) },
+        { desc: 'prove it with assert or isinstance, not just a comment', test: (raw) => /assert|isinstance/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Injury Type Desk',
+      role: 'developer',
+      story: 'The receptionist needs to note what kind of injury or illness the patient has.',
+      question: 'Write the Python line that asks for the injury/illness type and stores it in a variable called injury_type.',
+      placeholder: 'injury_type = input("Enter injury type: ")',
+      hint: 'Use input() and store the result in injury_type.',
+      validate: (raw) => hasAll(raw, ['injury_type', 'input(', '='])
+    },
+    {
+      title: 'Emergency Status Desk',
+      role: 'developer',
+      story: 'Finally — is this an emergency case or a normal visit? The receptionist records that too.',
+      question: 'Write the Python line that asks "Is this an emergency? (yes/no)" and stores the answer in a variable called is_emergency.',
+      placeholder: 'is_emergency = input("Is this an emergency? (yes/no): ")',
+      hint: 'Use input() and store the result in is_emergency.',
+      validate: (raw) => hasAll(raw, ['is_emergency', 'input(', '='])
+    },
+    {
+      title: 'Client Review Desk',
+      role: 'client',
+      story: 'Before triage starts, Mr. Adel stops by to check the exact intake code the team wrote — making sure it collects what City Hospital actually asked for.',
+      sourceIndex: 0,
+      question: 'As the Client: write Python that prints an approval message once patient_name is not empty, confirming City Hospital is happy with the intake form.',
+      placeholder: 'if patient_name != "":\n    print("Approved by City Hospital - intake form ready")',
+      hint: 'Check patient_name != "" (or a similar condition), then print() an approval message.',
+      validate: (raw) => hasAll(raw, ['if', 'patient_name', 'print(']) && hasAny(raw, ['approved', 'approve']),
+      checkPoints: [
+        { desc: 'start with an if statement', test: (raw) => /\bif\b/i.test(raw) },
+        { desc: 'check the patient_name variable', test: (raw) => /patient_name/i.test(raw) },
+        { desc: 'use print() to show your message', test: (raw) => /print\s*\(/i.test(raw) },
+        { desc: "mention that it's approved in your message", test: (raw) => /approv/i.test(raw) }
+      ]
+    }
+  ],
+
+  /* ===== 3. Triage & Booking Department ================================= */
+  [
+    {
+      title: 'Age Category Desk',
+      role: 'developer',
+      story: 'Before booking a room, the system has to know: is this patient a child or an adult?',
+      question: 'Write an if/else statement that checks if age is less than 18 and stores the result in a variable called age_group, set to "child" or "adult".',
+      placeholder: 'if age < 18:\n    age_group = "child"\nelse:\n    age_group = "adult"',
+      hint: 'Use if age < 18: age_group = "child", else age_group = "adult".',
+      validate: (raw) => hasAll(raw, ['if', 'age', '18', 'child', 'adult']) && hasAny(raw, ['else', 'elif'])
+    },
+    {
+      title: 'Emergency Priority Desk',
+      role: 'developer',
+      story: 'Emergency patients cannot wait in the normal queue — they need priority handling.',
+      question: 'Write an if statement that checks if is_emergency == "yes" and, if true, prints that the patient is sent to the Emergency Room.',
+      placeholder: 'if is_emergency == "yes":\n    print("Patient sent to Emergency Room")',
+      hint: 'Check is_emergency == "yes" and print a message about the Emergency Room.',
+      validate: (raw) => hasAll(raw, ['if', 'is_emergency', 'yes']) && hasAny(raw, ['emergency', 'urgent', 'priority'])
+    },
+    {
+      title: 'Room Assignment Desk',
+      role: 'developer',
+      story: 'Now combine everything: age group, emergency status and injury type all decide where the patient is booked.',
+      question: 'Write Python using if/elif/else that assigns a room: if age_group is "child" and is_emergency is "yes", book "Pediatric Emergency"; if age_group is "adult" and is_emergency is "yes", book "Adult Emergency"; otherwise book on injury_type into a normal ward.',
+      placeholder: 'if age_group == "child" and is_emergency == "yes":\n    room = "Pediatric Emergency"\nelif age_group == "adult" and is_emergency == "yes":\n    room = "Adult Emergency"\nelse:\n    room = "General Ward - " + injury_type',
+      hint: 'Combine age_group and is_emergency with and, and use elif for the different cases.',
+      validate: (raw) => hasAll(raw, ['if', 'age_group', 'is_emergency', 'room']) && hasAny(raw, ['elif'])
+    },
+    {
+      title: 'Triage QA Desk',
+      role: 'tester',
+      story: "Sara's room-assignment logic just landed with you, Omar. Before it goes live, prove it handles the trickiest case correctly — a child in an emergency.",
+      sourceIndex: 2,
+      question: 'As the Tester: write a Python test using assert proving that when age_group is "child" and is_emergency is "yes", room ends up equal to "Pediatric Emergency".',
+      placeholder: 'age_group = "child"\nis_emergency = "yes"\nassert room == "Pediatric Emergency"',
+      hint: 'Set age_group = "child" and is_emergency = "yes", then assert room == "Pediatric Emergency".',
+      validate: (raw) => hasAll(raw, ['assert', 'room']) && hasAny(raw, ['pediatric']),
+      checkPoints: [
+        { desc: 'use assert to prove it, not just describe it', test: (raw) => /assert/i.test(raw) },
+        { desc: 'check the room variable', test: (raw) => /room/i.test(raw) },
+        { desc: 'it should equal "Pediatric Emergency" specifically', test: (raw) => /pediatric/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Client Review Desk',
+      role: 'client',
+      story: "Omar's test passed, so the exact booking code goes to Mr. Adel. City Hospital wants to see it handle a real case correctly before it goes anywhere near a real patient.",
+      sourceIndex: 2,
+      question: 'As the Client: write Python that prints an approval message once room is not empty, confirming City Hospital trusts the booking logic.',
+      placeholder: 'if room != "":\n    print("Approved by City Hospital - booking logic confirmed")',
+      hint: 'Check room != "" (or a similar condition), then print() an approval message.',
+      validate: (raw) => hasAll(raw, ['if', 'room', 'print(']) && hasAny(raw, ['approved', 'approve']),
+      checkPoints: [
+        { desc: 'start with an if statement', test: (raw) => /\bif\b/i.test(raw) },
+        { desc: 'check the room variable', test: (raw) => /room/i.test(raw) },
+        { desc: 'use print() to show your message', test: (raw) => /print\s*\(/i.test(raw) },
+        { desc: "mention that it's approved in your message", test: (raw) => /approv/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Booking Confirmation Desk',
+      role: 'developer',
+      story: 'The patient needs to know where to go. Time to show the final booking on screen.',
+      question: "Write the Python print() line that shows the patient's name together with the assigned room, using an f-string.",
+      placeholder: 'print(f"{patient_name} is booked in {room}")',
+      hint: 'Use an f-string like f"{patient_name} ... {room}" inside print(). str.format() or + also work.',
+      validate: (raw) => hasAll(raw, ['print(', 'patient_name', 'room'])
+    }
+  ],
+
+  /* ===== 4. Bug Fixing Department ====================================== */
+  [
+    {
+      title: 'Bug Discovery Desk',
+      role: 'debugger',
+      story: 'City Hospital complained: children are being booked into the Adult Ward. Something is wrong in the age check. Time to put on your Debugger hat.',
+      code: '<span class="comment"># Current booking code (has a bug)</span>\n<span class="keyword">age</span> = input(<span class="string">"Enter patient age: "</span>)\n<span class="keyword">if</span> age &lt; 18:\n    age_group = <span class="string">"child"</span>',
+      question: "Write a one-line code comment explaining exactly what is wrong with this code.",
+      placeholder: '# age is still a string from input(), so comparing it with < 18 is wrong',
+      hint: 'The bug is that age was never converted to a number with int().',
+      validate: (raw) => hasAll(raw, ['int', 'age'])
+    },
+    {
+      title: 'Fix Desk',
+      role: 'debugger',
+      story: 'Time to fix it, Laila.',
+      code: '<span class="comment"># The correct fix</span>\n<span class="keyword">age</span> = ______',
+      question: 'Write the corrected Python line so age is properly converted to an integer when read from input().',
+      placeholder: 'age = int(input("Enter patient age: "))',
+      hint: 'Wrap input() with int(), e.g. age = int(input(...)).',
+      validate: (raw) => hasAll(raw, ['age', '=', 'int(', 'input('])
+    },
+    {
+      title: 'Retesting Desk',
+      role: 'tester',
+      story: "Laila's fix just landed with you, Omar — now confirm it actually works before it goes back out.",
+      sourceIndex: 1,
+      question: 'Write a small Python test proving the fix works for a patient aged 10 (expected age_group is child).',
+      placeholder: 'age = 10\nif age < 18:\n    age_group = "child"\nassert age_group == "child"',
+      hint: 'Show that for age = 10, age_group should end up equal to "child".',
+      validate: (raw) => hasAll(raw, ['age', '10']) && hasAny(raw, ['child']),
+      checkPoints: [
+        { desc: 'test with age set to 10 specifically', test: (raw) => /age/i.test(raw) && /10/.test(raw) },
+        { desc: 'show that the result should be "child"', test: (raw) => /child/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Client Review Desk',
+      role: 'client',
+      story: 'Omar confirms the fix holds, so it goes to Mr. Adel — City Hospital wants written confirmation, in their own words, that the pediatric booking bug is truly gone.',
+      sourceIndex: 1,
+      question: 'As the Client: write Python that prints an approval message once age_group equals "child" for a 10-year-old patient, confirming City Hospital accepts the bug fix.',
+      placeholder: 'if age_group == "child":\n    print("Approved by City Hospital - bug fix accepted")',
+      hint: 'Check age_group == "child", then print() a message mentioning approved or accepted.',
+      validate: (raw) => hasAll(raw, ['if', 'age_group', 'child', 'print(']) && hasAny(raw, ['approved', 'approve', 'accepted']),
+      checkPoints: [
+        { desc: 'start with an if statement', test: (raw) => /\bif\b/i.test(raw) },
+        { desc: 'check the age_group variable', test: (raw) => /age_group/i.test(raw) },
+        { desc: 'it should check for "child"', test: (raw) => /child/i.test(raw) },
+        { desc: 'use print() to show your message', test: (raw) => /print\s*\(/i.test(raw) },
+        { desc: "mention that it's approved or accepted in your message", test: (raw) => /approv|accept/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Redelivery Desk',
+      role: 'developer',
+      story: 'The fix is verified. What is the next step?',
+      question: 'Write a one-line commit message describing this fix.',
+      placeholder: 'fix: convert age to int before comparing with 18',
+      hint: "Mention 'fix' and that age is now an int (a number).",
+      validate: (raw) => hasAll(raw, ['fix', 'age']) && hasAny(raw, ['int', 'number'])
+    }
+  ],
+
+  /* ===== 5. Final Delivery Department ================================== */
+  [
+    {
+      title: 'Full Flow Desk',
+      role: 'developer',
+      story: 'Everything has to work together now: login, patient data, and triage & booking.',
+      question: 'Write the correct order of steps for the full reception program, separated by arrows (login, patient data, booking).',
+      placeholder: 'login -> patient data -> booking',
+      hint: 'Login comes first, then patient data, then booking.',
+      validate: (raw) => {
+        const n = norm(raw);
+        const iLogin = n.indexOf('login');
+        const iData = n.indexOf('patient');
+        const iBooking = n.indexOf('booking');
+        return iLogin >= 0 && iData >= 0 && iBooking >= 0 && iLogin < iData && iData < iBooking;
+      }
+    },
+    {
+      title: 'Booking Confirmation Desk',
+      role: 'developer',
+      story: 'The receptionist must know the booking was saved successfully.',
+      question: 'Write the Python print() line shown right after booking completes, containing a confirmation message (that the booking was "confirmed" or "saved").',
+      placeholder: 'print("Booking confirmed successfully")',
+      hint: 'Use print(), and the message should say the booking was confirmed or saved.',
+      validate: (raw) => hasAll(raw, ['print(']) && hasAny(raw, ['confirm', 'saved', 'success'])
+    },
+    {
+      title: 'Delivery Requirement Desk',
+      role: 'tester',
+      story: "Sara's final confirmation code just landed with you, Omar. Before the project goes to City Hospital, you are the one who gives the green light.",
+      sourceIndex: 1,
+      question: 'Write the Python condition that must be True before the project ships to the client, using a variable called all_tests_passed.',
+      placeholder: 'if all_tests_passed == True:',
+      hint: 'All required tests must pass, i.e. all_tests_passed should be True.',
+      validate: (raw) => hasAll(raw, ['if', 'all_tests_passed']),
+      checkPoints: [
+        { desc: 'start with an if statement', test: (raw) => /\bif\b/i.test(raw) },
+        { desc: 'check the all_tests_passed variable specifically', test: (raw) => /all_tests_passed/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Client Sign-Off Desk',
+      role: 'client',
+      story: 'This is the big one. Mr. Adel reviews everything the team built together — login, patient data, triage, the bug fix — before officially signing off on the release.',
+      sourceIndex: 1,
+      question: 'As the Client: write the Python condition using a variable called project_approved that must be True before City Hospital signs off on the release.',
+      placeholder: 'if project_approved == True:\n    print("City Hospital approves the release")',
+      hint: 'Check if project_approved == True (or just project_approved:), then print() an approval message.',
+      validate: (raw) => hasAll(raw, ['if', 'project_approved']) && hasAny(raw, ['approved', 'approve', 'print(']),
+      checkPoints: [
+        { desc: 'start with an if statement', test: (raw) => /\bif\b/i.test(raw) },
+        { desc: 'check the project_approved variable', test: (raw) => /project_approved/i.test(raw) },
+        { desc: "show an approval message with print(), or mention 'approved'", test: (raw) => /print\s*\(/i.test(raw) || /approv/i.test(raw) }
+      ]
+    },
+    {
+      title: 'Delivery Desk',
+      role: 'developer',
+      story: 'The decisive moment. The reception system is ready for delivery.',
+      question: 'Write the final line of Python that delivers the finished system to City Hospital — a function call.',
+      placeholder: 'deliver_system("City Hospital", "SmartReception")',
+      hint: 'Name a function like deliver_system or deploy_system and call it.',
+      validate: (raw) => hasAny(raw, ['deliver', 'deploy', 'ship'])
+    }
+  ]
+];
+
+return { CHALLENGES };
+})();
+
+/* ===== engine/world.js ===== */
+const Mod_engine_world = (function() {
+const { game, world, view } = Mod_engine_state;
+const { LEVELS } = Mod_data_levels;
+const { CHALLENGES } = Mod_data_challenges;
+
+/**
+ * Lay out a department.
+ *
+ * Desks are spaced evenly across the floor and everything else is placed
+ * around them. Hazards keep clear of desks so a learner is never knocked away
+ * from the thing they were walking towards.
+ */
+function buildLevel(levelIdx) {
+  const cfg = LEVELS[levelIdx];
+  const desks = CHALLENGES[levelIdx];
+
+  game.worldWidth = cfg.worldWidth;
+  world.desks = [];
+  world.ledges = [];
+  world.hazards = [];
+  world.fixtures = [];
+
+  /* --- desks ---------------------------------------------------------- */
+  const gap = game.worldWidth / (desks.length + 1);
+  for (let i = 0; i < desks.length; i++) {
+    world.desks.push({
+      index: i,
+      x: gap * (i + 1),
+      width: 108,
+      height: 132,
+      role: desks[i].role || 'developer',
+      title: desks[i].title,
+      done: false,
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+
+  /* --- hazards -------------------------------------------------------- */
+  const clearOfDesks = (x) => world.desks.every(d => Math.abs(x - d.x) > 190);
+  for (let i = 0; i < cfg.obstacleCount; i++) {
+    let x = 0;
+    for (let tries = 0; tries < 12; tries++) {
+      x = 320 + Math.random() * (game.worldWidth - 640);
+      if (clearOfDesks(x)) break;
+    }
+    const kind = Math.random() > 0.5 ? 'bug' : 'spill';
+    world.hazards.push({
+      kind,
+      x,
+      width: kind === 'spill' ? 74 + Math.random() * 44 : 30,
+      height: kind === 'spill' ? 12 : 34,
+      cooldown: 0,
+      wiggle: Math.random() * Math.PI * 2
+    });
+  }
+
+  /* --- ledges: filing cabinets and crates that drift ------------------- */
+  for (let i = 0; i < cfg.ledgeCount; i++) {
+    world.ledges.push({
+      x: 520 + i * (game.worldWidth / (cfg.ledgeCount + 1)),
+      y: 0,
+      baseY: 0,
+      width: 116,
+      height: 22,
+      amplitude: 70 + Math.random() * 46,
+      speed: 0.016 + Math.random() * 0.01,
+      phase: Math.random() * Math.PI * 2,
+      horizontal: Math.random() > 0.55,
+      driftX: 0
+    });
+  }
+
+  /* --- fixtures: the room dressing ------------------------------------ */
+  const kinds = cfg.fixtures;
+  const count = 16;
+  for (let i = 0; i < count; i++) {
+    const x = 120 + (i + Math.random() * 0.6) * (game.worldWidth / count);
+    if (!clearOfDesks(x)) continue;
+    world.fixtures.push({
+      kind: kinds[i % kinds.length],
+      x,
+      scale: 0.86 + Math.random() * 0.34,
+      seed: Math.random()
+    });
+  }
+
+  seedMotes();
+}
+
+/**
+ * Dust in the light. Replaces the old falling-digits "code rain", which was
+ * the most borrowed-looking thing in the build and said nothing about an
+ * office. Motes drift slowly and are barely there — atmosphere, not decoration.
+ */
+function seedMotes() {
+  game.motes = [];
+  for (let i = 0; i < 55; i++) {
+    game.motes.push({
+      x: Math.random() * game.worldWidth,
+      y: Math.random() * view.h,
+      r: 0.8 + Math.random() * 1.8,
+      driftX: (Math.random() - 0.5) * 0.28,
+      driftY: 0.10 + Math.random() * 0.3,
+      alpha: 0.12 + Math.random() * 0.4
+    });
+  }
+}
+
+return { buildLevel, seedMotes };
+})();
+
+/* ===== engine/physics.js ===== */
+const Mod_engine_physics = (function() {
+const { game, player, world, view, spark } = Mod_engine_state;
+const { LEVELS } = Mod_data_levels;
+const { ROLE_COLOR } = Mod_data_team;
+const { showToast } = Mod_ui_toast;
+
+const GRAVITY = 0.65;
+const TERMINAL = 16;
+const JUMP = -13;
+
+const LEFT  = ['arrowleft', 'a', 'ArrowLeft', 'KeyA'];
+const RIGHT = ['arrowright', 'd', 'ArrowRight', 'KeyD'];
+const UP    = [' ', 'arrowup', 'w', 'Space', 'ArrowUp', 'KeyW'];
+
+const held = (list) => list.some(k => game.keys[k]);
+
+function updatePlayer() {
+  const cfg = LEVELS[game.level];
+  const accel = 0.28 * cfg.difficulty;
+  const maxSpeed = 6 + cfg.difficulty;
+
+  if (held(LEFT)) {
+    player.vx -= accel;
+  } else if (held(RIGHT)) {
+    player.vx += accel;
+  } else {
+    player.vx *= 0.92;
+  }
+
+  player.vx = Math.max(-maxSpeed, Math.min(maxSpeed, player.vx));
+  if (Math.abs(player.vx) < 0.05) player.vx = 0;
+
+  if (held(UP) && player.onGround) {
+    player.vy = JUMP;
+    player.onGround = false;
+    spark(player.x, player.y + player.radius, '#C3B9A3', 7, 4);
+  }
+
+  player.vy = Math.min(TERMINAL, player.vy + GRAVITY);
+
+  player.x += player.vx;
+  player.y += player.vy;
+
+  // wheel spins with distance travelled; body leans into acceleration
+  player.wheel += player.vx * 0.06;
+  player.lean += (player.vx * 0.018 - player.lean) * 0.14;
+
+  // walls
+  if (player.x - player.radius < 0) { player.x = player.radius; player.vx = 0; }
+  if (player.x + player.radius > game.worldWidth) {
+    player.x = game.worldWidth - player.radius;
+    player.vx = 0;
+  }
+
+  resolveGround();
+  resolveHazards();
+
+  if (player.mood !== 'ok' && --player.moodTimer <= 0) player.mood = 'ok';
+}
+
+function resolveGround() {
+  player.onGround = false;
+
+  for (const l of world.ledges) {
+    const withinX = player.x + player.radius > l.x && player.x - player.radius < l.x + l.width;
+    const landing = player.y + player.radius >= l.y && player.y + player.radius <= l.y + 22;
+    if (withinX && landing && player.vy >= 0) {
+      player.y = l.y - player.radius;
+      player.vy = 0;
+      player.onGround = true;
+      if (l.horizontal) player.x += l.driftX;
+    }
+  }
+
+  const floor = game.groundY - player.radius;
+  if (player.y >= floor) {
+    player.y = floor;
+    player.vy = 0;
+    player.onGround = true;
+  }
+}
+
+function resolveHazards() {
+  for (const h of world.hazards) {
+    if (h.cooldown > 0) { h.cooldown--; continue; }
+
+    const overlapX = player.x + player.radius > h.x && player.x - player.radius < h.x + h.width;
+    if (!overlapX) continue;
+
+    if (h.kind === 'spill') {
+      // coffee slows you down; it never costs focus. Friction, not punishment.
+      if (player.y + player.radius >= game.groundY - 6) player.vx *= 0.85;
+      continue;
+    }
+
+    const top = game.groundY - h.height;
+    const overlapY = player.y + player.radius > top && player.y - player.radius < game.groundY;
+    if (!overlapY) continue;
+
+    game.focus = Math.max(0, game.focus - 8);
+    h.cooldown = 70;
+    player.vx = -Math.sign(player.vx || 1) * 9;
+    player.vy = -8;
+    player.mood = 'hurt';
+    player.moodTimer = 45;
+    spark(player.x, player.y, ROLE_COLOR.debugger, 16, 10);
+    showToast('A bug got past you. −8 focus.', 'fault');
+  }
+}
+
+function updateLedges() {
+  for (const l of world.ledges) {
+    l.phase += l.speed;
+    if (l.horizontal) {
+      l.driftX = Math.cos(l.phase) * 1.5;
+      l.x += l.driftX;
+      l.y = l.baseY;          // horizontal ledges still need a height
+    } else {
+      l.driftX = 0;
+      l.y = l.baseY + Math.sin(l.phase) * l.amplitude;
+    }
+  }
+}
+
+function updateCamera() {
+  const target = player.x - view.w / 2;
+  game.cameraX += (target - game.cameraX) * 0.1;
+  game.cameraX = Math.max(0, Math.min(game.worldWidth - view.w, game.cameraX));
+  if (game.worldWidth < view.w) game.cameraX = 0;
+}
+
+function updateMotes() {
+  for (const m of game.motes) {
+    m.x += m.driftX;
+    m.y += m.driftY;
+    if (m.y > view.h) {
+      m.y = -6;
+      m.x = game.cameraX + Math.random() * view.w;
+    }
+    if (m.x < game.cameraX - 60) m.x = game.cameraX + view.w + 20;
+    if (m.x > game.cameraX + view.w + 60) m.x = game.cameraX - 20;
+  }
+}
+
+function updateParticles() {
+  for (let i = game.particles.length - 1; i >= 0; i--) {
+    const p = game.particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.3;
+    p.vx *= 0.99;
+    if (--p.life <= 0) game.particles.splice(i, 1);
+  }
+}
+
+/**
+ * The desk the player may use right now, or null.
+ *
+ * Only the next incomplete desk counts. Order matters here in a way it does
+ * not in most platformers: a tester desk opened before the developer desk it
+ * reviews would have no teammate code to show, which is the whole mechanic.
+ */
+function deskInReach() {
+  const next = world.desks.find(d => !d.done);
+  if (!next) return null;
+  const withinReach = Math.abs(player.x - (next.x + next.width / 2)) < 78;
+  return withinReach ? next : null;
+}
+
+return { updatePlayer, updateLedges, updateCamera, updateMotes, updateParticles, deskInReach };
+})();
+
+/* ===== engine/render.js ===== */
+const Mod_engine_render = (function() {
+const { game, player, world, view, ctx } = Mod_engine_state;
+const { LEVELS } = Mod_data_levels;
+const { ROLE_COLOR, TEAM } = Mod_data_team;
+
+/* ==========================================================================
+   Drawing the office.
+   --------------------------------------------------------------------------
+   The old build drew a neon void: gradient sky, glowing slabs, falling digits.
+   This draws a room — ceiling tiles, a chair rail, windows throwing light onto
+   carpet, filing cabinets, a water cooler, a clock that reads a bit past five.
+   The fiction is a workplace, so the world has to look like one.
+   ========================================================================== */
+
+const FONT = "'IBM Plex Sans', system-ui, sans-serif";
+const MONO = "'IBM Plex Mono', Consolas, monospace";
+
+/* --- small colour helpers so palettes stay declarative ------------------- */
+function hex(c) {
+  const n = parseInt(c.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function rgba([r, g, b], a) { return `rgba(${r},${g},${b},${a})`; }
+function shade(c, amt) {
+  const [r, g, b] = hex(c);
+  const f = (v) => Math.max(0, Math.min(255, Math.round(v + 255 * amt)));
+  return `rgb(${f(r)},${f(g)},${f(b)})`;
+}
+function box(x, y, w, h, r) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+  else ctx.rect(x, y, w, h);
+}
+
+function render() {
+  const cfg = LEVELS[game.level];
+  const p = cfg.palette;
+
+  drawRoom(p);
+
+  ctx.save();
+  ctx.translate(-game.cameraX, 0);
+
+  drawFloor(p);
+  drawFixtures(p);
+  drawLedges(p);
+  drawHazards(p);
+  drawDesks(p);
+  drawPlayer();
+  drawParticles();
+  drawMotes(p);
+
+  ctx.restore();
+}
+
+/* ==========================================================================
+   The room shell — walls, ceiling, windows. Drawn in screen space with the
+   camera applied as parallax, so the far wall moves slower than the floor.
+   ========================================================================== */
+function drawRoom(p) {
+  const w = view.w;
+  const h = view.h;
+  const gy = game.groundY;
+
+  const wall = ctx.createLinearGradient(0, 0, 0, gy);
+  wall.addColorStop(0, p.wallTop);
+  wall.addColorStop(1, p.wallBottom);
+  ctx.fillStyle = wall;
+  ctx.fillRect(0, 0, w, h);
+
+  /* ceiling: a suspended tile grid, receding */
+  const ceil = Math.min(96, h * 0.17);
+  ctx.fillStyle = shade(p.wallTop, -0.05);
+  ctx.fillRect(0, 0, w, ceil);
+  ctx.strokeStyle = rgba(hex(p.trim), 0.5);
+  ctx.lineWidth = 1;
+  const tile = 78;
+  const cOff = -(game.cameraX * 0.18) % tile;
+  ctx.beginPath();
+  for (let x = cOff; x < w + tile; x += tile) {
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x + 22, ceil);
+  }
+  ctx.moveTo(0, ceil);
+  ctx.lineTo(w, ceil);
+  ctx.stroke();
+
+  /* strip lights along the ceiling */
+  const lightGap = 340;
+  const lOff = -(game.cameraX * 0.18) % lightGap;
+  for (let x = lOff; x < w + lightGap; x += lightGap) {
+    ctx.fillStyle = p.dark ? 'rgba(120,90,90,0.35)' : 'rgba(255,250,230,0.85)';
+    ctx.fillRect(x + 40, ceil - 9, 118, 7);
+    const glow = ctx.createLinearGradient(0, ceil, 0, ceil + 150);
+    glow.addColorStop(0, p.light);
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(x + 12, ceil, 174, 150);
+  }
+
+  /* windows (or server racks, when the room is a dark one) at mid parallax */
+  const bay = 560;
+  const bOff = -(game.cameraX * 0.42) % bay;
+  const winTop = ceil + 44;
+  const winH = Math.max(96, gy - winTop - 150);
+
+  for (let x = bOff; x < w + bay; x += bay) {
+    if (p.dark) {
+      drawWallRack(x + 70, winTop, 150, winH, p);
+    } else {
+      drawWindow(x + 70, winTop, 210, winH, p);
+      // light thrown down the wall onto the floor
+      const shaft = ctx.createLinearGradient(0, winTop, 0, gy);
+      shaft.addColorStop(0, p.light);
+      shaft.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = shaft;
+      ctx.beginPath();
+      ctx.moveTo(x + 70, winTop);
+      ctx.lineTo(x + 280, winTop);
+      ctx.lineTo(x + 340, gy);
+      ctx.lineTo(x + 20, gy);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  /* chair rail — the line that makes it read as a corridor, not a backdrop */
+  const rail = gy - 132;
+  ctx.fillStyle = rgba(hex(p.trim), 0.85);
+  ctx.fillRect(0, rail, w, 5);
+  ctx.fillStyle = rgba(hex(p.wallTop), 0.4);
+  ctx.fillRect(0, rail + 5, w, 3);
+}
+
+function drawWindow(x, y, w, h, p) {
+  ctx.fillStyle = shade(p.trim, -0.08);
+  ctx.fillRect(x - 6, y - 6, w + 12, h + 12);
+
+  const sky = ctx.createLinearGradient(0, y, 0, y + h);
+  if (p.dark) {
+    sky.addColorStop(0, '#2A3348');
+    sky.addColorStop(1, '#131A28');
+  } else {
+    sky.addColorStop(0, '#BFDCEC');
+    sky.addColorStop(1, '#E9DFC4');
+  }
+  ctx.fillStyle = sky;
+  ctx.fillRect(x, y, w, h);
+
+  /* a suggestion of a city, so the window has somewhere to look */
+  ctx.fillStyle = 'rgba(70,86,104,0.32)';
+  let bx = x + 8;
+  let i = 0;
+  while (bx < x + w - 10) {
+    const bw = 20 + ((i * 37) % 26);
+    const bh = 26 + ((i * 53) % 58);
+    ctx.fillRect(bx, y + h - bh, bw, bh);
+    bx += bw + 7;
+    i++;
+  }
+
+  /* mullions */
+  ctx.strokeStyle = shade(p.trim, -0.16);
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(x + w / 2, y);
+  ctx.lineTo(x + w / 2, y + h);
+  ctx.moveTo(x, y + h * 0.42);
+  ctx.lineTo(x + w, y + h * 0.42);
+  ctx.stroke();
+  ctx.strokeRect(x, y, w, h);
+}
+
+function drawWallRack(x, y, w, h, p) {
+  ctx.fillStyle = shade(p.wallTop, -0.10);
+  ctx.fillRect(x, y, w, h);
+  ctx.strokeStyle = rgba(hex(p.trim), 0.7);
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x, y, w, h);
+
+  const rows = Math.floor(h / 26);
+  for (let r = 0; r < rows; r++) {
+    const ry = y + 8 + r * 26;
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillRect(x + 8, ry, w - 16, 18);
+    for (let d = 0; d < 5; d++) {
+      const lit = ((r * 7 + d * 13 + Math.floor(game.time / 26)) % 11) < 5;
+      ctx.fillStyle = lit ? (d % 3 === 0 ? '#C4442F' : '#3F8F68') : 'rgba(255,255,255,0.10)';
+      ctx.fillRect(x + 16 + d * 13, ry + 6, 6, 6);
+    }
+  }
+}
+
+/* ==========================================================================
+   Floor
+   ========================================================================== */
+function drawFloor(p) {
+  const gy = game.groundY;
+  const left = game.cameraX;
+  const w = view.w;
+
+  const carpet = ctx.createLinearGradient(0, gy, 0, view.h);
+  carpet.addColorStop(0, p.floor);
+  carpet.addColorStop(1, p.floorDark);
+  ctx.fillStyle = carpet;
+  ctx.fillRect(left, gy, w, view.h - gy);
+
+  /* skirting board */
+  ctx.fillStyle = p.skirting;
+  ctx.fillRect(left, gy - 14, w, 14);
+  ctx.fillStyle = rgba(hex(p.trim), 0.55);
+  ctx.fillRect(left, gy - 14, w, 3);
+  ctx.fillStyle = 'rgba(0,0,0,0.28)';
+  ctx.fillRect(left, gy, w, 3);
+
+  /* carpet fleck — deterministic from position, so it doesn't crawl */
+  ctx.fillStyle = 'rgba(255,255,255,0.045)';
+  const start = Math.floor(left / 17) * 17;
+  for (let x = start; x < left + w; x += 17) {
+    for (let y = gy + 10; y < view.h; y += 15) {
+      const jitter = ((x * 31 + y * 17) % 11);
+      if (jitter > 6) ctx.fillRect(x + (jitter % 5), y, 2, 2);
+    }
+  }
+}
+
+/* ==========================================================================
+   Fixtures — the props that make it a specific room
+   ========================================================================== */
+function drawFixtures(p) {
+  for (const f of world.fixtures) {
+    if (f.x < game.cameraX - 200 || f.x > game.cameraX + view.w + 200) continue;
+    ctx.save();
+    ctx.translate(f.x, game.groundY);
+    ctx.scale(f.scale, f.scale);
+    switch (f.kind) {
+      case 'plant':      drawPlant(); break;
+      case 'cabinet':    drawCabinet(p); break;
+      case 'cooler':     drawCooler(p); break;
+      case 'clock':      drawClock(p); break;
+      case 'whiteboard': drawWhiteboard(p); break;
+      case 'rack':       drawRack(f); break;
+      case 'boxes':      drawBoxes(); break;
+      case 'crate':      drawCrate(); break;
+    }
+    ctx.restore();
+  }
+}
+
+function drawPlant() {
+  ctx.fillStyle = '#8C6B4A';
+  box(-17, -30, 34, 30, 3); ctx.fill();
+  ctx.fillStyle = '#6E5238';
+  ctx.fillRect(-17, -30, 34, 5);
+  ctx.strokeStyle = '#2F6B4A';
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  for (let i = -2; i <= 2; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, -30);
+    ctx.quadraticCurveTo(i * 16, -58, i * 22, -84 + Math.abs(i) * 13);
+    ctx.stroke();
+  }
+  ctx.fillStyle = '#3C8A5E';
+  for (let i = -2; i <= 2; i++) {
+    ctx.beginPath();
+    ctx.ellipse(i * 22, -84 + Math.abs(i) * 13, 12, 7, i * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drawCabinet(p) {
+  const h = 96, w = 52;
+  ctx.fillStyle = shade(p.trim, 0.12);
+  ctx.fillRect(-w / 2, -h, w, h);
+  ctx.fillStyle = 'rgba(0,0,0,0.16)';
+  ctx.fillRect(w / 2 - 7, -h, 7, h);
+  ctx.strokeStyle = 'rgba(0,0,0,0.34)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(-w / 2, -h, w, h);
+  for (let d = 0; d < 3; d++) {
+    const dy = -h + 8 + d * 29;
+    ctx.strokeRect(-w / 2 + 6, dy, w - 12, 23);
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(-8, dy + 9, 16, 4);
+  }
+}
+
+function drawCooler(p) {
+  ctx.fillStyle = shade(p.trim, 0.2);
+  box(-16, -62, 32, 62, 3); ctx.fill();
+  ctx.fillStyle = 'rgba(140,200,220,0.75)';
+  box(-14, -96, 28, 36, 6); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.fillRect(-10, -92, 5, 26);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(-5, -44, 10, 5);
+}
+
+function drawClock(p) {
+  const cy = -190;
+  ctx.fillStyle = shade(p.trim, 0.24);
+  ctx.beginPath(); ctx.arc(0, cy, 21, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#F6F2E6';
+  ctx.beginPath(); ctx.arc(0, cy, 17, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#2A2620';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  // a bit past five — late in the day, which is when the work actually happens
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(8, cy + 5); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(1, cy - 12); ctx.stroke();
+}
+
+function drawWhiteboard(p) {
+  const w = 128, h = 78, y = -186;
+  ctx.fillStyle = shade(p.trim, 0.26);
+  ctx.fillRect(-w / 2 - 4, y - 4, w + 8, h + 8);
+  ctx.fillStyle = '#F7F5EE';
+  ctx.fillRect(-w / 2, y, w, h);
+  ctx.strokeStyle = '#3A6698';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  // a boxes-and-arrows sketch, because that is what is always on them
+  ctx.strokeRect(-46, y + 16, 30, 20);
+  ctx.strokeRect(4, y + 16, 30, 20);
+  ctx.beginPath();
+  ctx.moveTo(-14, y + 26); ctx.lineTo(2, y + 26);
+  ctx.moveTo(-3, y + 22); ctx.lineTo(2, y + 26); ctx.lineTo(-3, y + 30);
+  ctx.stroke();
+  ctx.strokeStyle = '#C4442F';
+  ctx.beginPath();
+  ctx.moveTo(-46, y + 52); ctx.lineTo(28, y + 52);
+  ctx.moveTo(-46, y + 62); ctx.lineTo(6, y + 62);
+  ctx.stroke();
+}
+
+function drawRack(f) {
+  const w = 60, h = 150;
+  ctx.fillStyle = '#1A1620';
+  ctx.fillRect(-w / 2, -h, w, h);
+  ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(-w / 2, -h, w, h);
+  for (let r = 0; r < 8; r++) {
+    const ry = -h + 10 + r * 17;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(-w / 2 + 6, ry, w - 12, 12);
+    const lit = ((r * 5 + Math.floor(game.time / 20 + f.seed * 9)) % 9) < 4;
+    ctx.fillStyle = lit ? '#3F8F68' : 'rgba(255,255,255,0.12)';
+    ctx.fillRect(-w / 2 + 10, ry + 4, 5, 5);
+    ctx.fillStyle = lit ? '#DE9A2E' : 'rgba(255,255,255,0.12)';
+    ctx.fillRect(-w / 2 + 19, ry + 4, 5, 5);
+  }
+}
+
+function drawBoxes() {
+  ctx.fillStyle = '#B08C5E';
+  ctx.fillRect(-30, -34, 34, 34);
+  ctx.fillRect(2, -58, 30, 58);
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(-30, -34, 34, 34);
+  ctx.strokeRect(2, -58, 30, 58);
+  ctx.fillStyle = 'rgba(240,235,220,0.75)';
+  ctx.fillRect(-24, -25, 22, 8);
+  ctx.fillRect(8, -44, 18, 8);
+}
+
+function drawCrate() {
+  const w = 74, h = 56;
+  ctx.fillStyle = '#A8834F';
+  ctx.fillRect(-w / 2, -h, w, h);
+  ctx.strokeStyle = '#7A5D34';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(-w / 2, -h, w, h);
+  ctx.beginPath();
+  ctx.moveTo(-w / 2, -h); ctx.lineTo(w / 2, 0);
+  ctx.moveTo(w / 2, -h); ctx.lineTo(-w / 2, 0);
+  ctx.stroke();
+  ctx.fillStyle = '#F0EBDF';
+  ctx.fillRect(-22, -h + 12, 44, 15);
+  ctx.fillStyle = '#2A2620';
+  ctx.font = `600 9px ${MONO}`;
+  ctx.textAlign = 'center';
+  ctx.fillText('CITY HOSP.', 0, -h + 22);
+  ctx.textAlign = 'left';
+}
+
+/* ==========================================================================
+   Ledges — filing cabinets and crates you can stand on
+   ========================================================================== */
+function drawLedges(p) {
+  for (const l of world.ledges) {
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillRect(l.x + 4, l.y + 4, l.width, l.height);
+
+    ctx.fillStyle = shade(p.trim, -0.06);
+    ctx.fillRect(l.x, l.y, l.width, l.height);
+    ctx.fillStyle = 'rgba(255,255,255,0.30)';
+    ctx.fillRect(l.x, l.y, l.width, 4);
+    ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(l.x, l.y, l.width, l.height);
+
+    /* stencilled arrows so a moving ledge reads as moving */
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
+    for (let i = 0; i < 3; i++) {
+      ctx.fillRect(l.x + 22 + i * 26, l.y + 9, 12, 4);
+    }
+  }
+}
+
+/* ==========================================================================
+   Hazards
+   ========================================================================== */
+function drawHazards(p) {
+  const gy = game.groundY;
+  for (const h of world.hazards) {
+    if (h.x < game.cameraX - 150 || h.x > game.cameraX + view.w + 150) continue;
+
+    if (h.kind === 'spill') {
+      const cx = h.x + h.width / 2;
+      ctx.fillStyle = 'rgba(74,48,26,0.55)';
+      ctx.beginPath();
+      ctx.ellipse(cx, gy - 2, h.width / 2, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.14)';
+      ctx.beginPath();
+      ctx.ellipse(cx - h.width * 0.16, gy - 4, h.width * 0.14, 2.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // the cup that caused it, on its side
+      ctx.save();
+      ctx.translate(cx + h.width * 0.28, gy - 8);
+      ctx.rotate(-1.15);
+      ctx.fillStyle = '#E4E0D4';
+      box(-9, -7, 18, 15, 2); ctx.fill();
+      ctx.strokeStyle = '#B5AE9C';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(11, 0, 5, -Math.PI / 2, Math.PI / 2);
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
+
+    /* a bug, drawn as an actual beetle rather than a red block */
+    h.wiggle += 0.14;
+    const bx = h.x + h.width / 2 + Math.sin(h.wiggle) * 3;
+    const by = gy - 13;
+    const hot = h.cooldown > 0;
+
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath(); ctx.ellipse(bx, gy - 1, 14, 4, 0, 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = hot ? '#E8705C' : '#5E1E16';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    for (let i = -1; i <= 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(bx + i * 5, by - 3);
+      ctx.lineTo(bx + i * 9 - 6, by - 11 + Math.sin(h.wiggle + i) * 2);
+      ctx.moveTo(bx + i * 5, by + 3);
+      ctx.lineTo(bx + i * 9 - 6, by + 11 + Math.cos(h.wiggle + i) * 2);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = hot ? '#E8705C' : ROLE_COLOR.debugger;
+    ctx.beginPath(); ctx.ellipse(bx, by, 13, 9, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(bx - 1, by - 9, 2, 18);
+    ctx.fillStyle = '#3A1310';
+    ctx.beginPath(); ctx.arc(bx - 13, by, 5.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#F6E7C8';
+    ctx.beginPath(); ctx.arc(bx - 15, by - 2, 1.6, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+/* ==========================================================================
+   Desks — one per challenge, colour-coded by whose job it is
+   ========================================================================== */
+function drawDesks(p) {
+  const gy = game.groundY;
+
+  for (const d of world.desks) {
+    if (d.x < game.cameraX - 260 || d.x > game.cameraX + view.w + 260) continue;
+
+    d.pulse += 0.045;
+    const isNext = !d.done && (d.index === 0 || world.desks[d.index - 1].done);
+    const role = ROLE_COLOR[d.role];
+    const top = gy - 62;
+
+    /* --- the desk itself --- */
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath(); ctx.ellipse(d.x + d.width / 2, gy - 1, d.width * 0.55, 6, 0, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = shade(p.trim, -0.14);
+    ctx.fillRect(d.x + 8, top + 8, 10, 54);
+    ctx.fillRect(d.x + d.width - 18, top + 8, 10, 54);
+    ctx.fillStyle = 'rgba(0,0,0,0.26)';
+    ctx.fillRect(d.x + 16, top + 34, d.width - 32, 28);
+
+    ctx.fillStyle = shade(p.trim, -0.02);
+    ctx.fillRect(d.x, top, d.width, 9);
+    ctx.fillStyle = 'rgba(255,255,255,0.34)';
+    ctx.fillRect(d.x, top, d.width, 3);
+    ctx.fillStyle = 'rgba(0,0,0,0.30)';
+    ctx.fillRect(d.x, top + 9, d.width, 2);
+
+    /* --- monitor --- */
+    const mw = 66, mh = 54;
+    const mx = d.x + d.width / 2 - mw / 2;
+    const my = top - mh;
+
+    ctx.fillStyle = '#3A342A';
+    ctx.fillRect(d.x + d.width / 2 - 11, my + mh, 22, 6);
+    ctx.fillStyle = '#4A4235';
+    ctx.fillRect(d.x + d.width / 2 - 20, top - 3, 40, 4);
+
+    ctx.fillStyle = d.done ? '#A9A28E' : (isNext ? '#CFC6AE' : '#837C6D');
+    box(mx, my, mw, mh, 4); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    /* --- screen --- */
+    const sx = mx + 6, sy = my + 6, sw = mw - 12, sh = mh - 16;
+    if (isNext) {
+      ctx.save();
+      ctx.shadowColor = role;
+      ctx.shadowBlur = 14 + Math.sin(d.pulse) * 7;
+    }
+    ctx.fillStyle = d.done ? '#1E3327' : (isNext ? '#221E15' : '#22201B');
+    ctx.fillRect(sx, sy, sw, sh);
+    if (isNext) ctx.restore();
+
+    if (d.done) {
+      ctx.strokeStyle = '#5FBF8C';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      const cx = sx + sw / 2, cy = sy + sh / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx - 9, cy);
+      ctx.lineTo(cx - 3, cy + 7);
+      ctx.lineTo(cx + 10, cy - 8);
+      ctx.stroke();
+    } else if (isNext) {
+      /* a prompt and a few lines of waiting code */
+      ctx.fillStyle = role;
+      ctx.fillRect(sx + 5, sy + 6, 5, 3);
+      ctx.fillRect(sx + 13, sy + 6, 18, 3);
+      ctx.fillStyle = rgba(hex(role), 0.5);
+      ctx.fillRect(sx + 5, sy + 14, 30, 3);
+      ctx.fillRect(sx + 5, sy + 22, 21, 3);
+      if (Math.sin(d.pulse * 2.4) > 0) {
+        ctx.fillStyle = role;
+        ctx.fillRect(sx + 29, sy + 22, 6, 3);
+      }
+    } else {
+      ctx.fillStyle = 'rgba(255,255,255,0.07)';
+      ctx.fillRect(sx + 5, sy + 8, 26, 3);
+      ctx.fillRect(sx + 5, sy + 16, 17, 3);
+    }
+
+    /* --- nameplate on the desk front --- */
+    const plateW = 78, plateH = 17;
+    const px = d.x + d.width / 2 - plateW / 2;
+    const py = top + 15;
+    ctx.fillStyle = d.done ? '#3F8F68' : (isNext ? role : '#6E675B');
+    box(px, py, plateW, plateH, 2); ctx.fill();
+    ctx.fillStyle = d.done || d.role === 'developer' ? '#1F1C16' : '#F4F0E4';
+    ctx.font = `600 9px ${MONO}`;
+    ctx.textAlign = 'center';
+    ctx.fillText(TEAM[d.role].name.toUpperCase(), px + plateW / 2, py + 12);
+
+    /* --- desk number + title above --- */
+    ctx.font = `600 12px ${FONT}`;
+    const label = p.dark ? '#F0EBDF' : '#2A2620';
+    ctx.fillStyle = isNext ? label : rgba(hex(label), 0.42);
+    ctx.fillText(`${d.index + 1}. ${d.title}`, d.x + d.width / 2, my - 16);
+
+    if (isNext) {
+      const bob = Math.sin(d.pulse * 1.7) * 4;
+      ctx.fillStyle = role;
+      ctx.beginPath();
+      ctx.moveTo(d.x + d.width / 2, my - 34 + bob);
+      ctx.lineTo(d.x + d.width / 2 - 8, my - 46 + bob);
+      ctx.lineTo(d.x + d.width / 2 + 8, my - 46 + bob);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.textAlign = 'left';
+  }
+}
+
+/* ==========================================================================
+   The player — a CRT-headed courier on a castor
+   ========================================================================== */
+function drawPlayer() {
+  const { x, y, radius } = player;
+
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.ellipse(x, game.groundY - 2, radius * 0.8, 5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(player.lean);
+
+  /* castor */
+  ctx.save();
+  ctx.translate(0, 14);
+  ctx.rotate(player.wheel);
+  ctx.fillStyle = '#2E2A22';
+  ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#6E675B';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(Math.cos(i * 2.09) * 7, Math.sin(i * 2.09) * 7);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  /* neck */
+  ctx.fillStyle = '#4A4235';
+  ctx.fillRect(-4, 4, 8, 10);
+
+  /* CRT body */
+  ctx.fillStyle = '#DCD3BE';
+  box(-19, -23, 38, 31, 5); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,0.16)';
+  box(-19, 2, 38, 6, 3); ctx.fill();
+  ctx.strokeStyle = '#8F8878';
+  ctx.lineWidth = 2;
+  box(-19, -23, 38, 31, 5); ctx.stroke();
+
+  /* screen */
+  ctx.fillStyle = '#221E15';
+  box(-14, -19, 28, 20, 3); ctx.fill();
+
+  /* face — the one place the character gets to emote */
+  const amber = player.mood === 'hurt' ? '#E8705C' : '#F2B547';
+  ctx.fillStyle = amber;
+  player.blink = (player.blink + 1) % 260;
+  const shut = player.blink > 250;
+
+  if (shut) {
+    ctx.fillRect(-8, -11, 5, 2);
+    ctx.fillRect(3, -11, 5, 2);
+  } else if (player.mood === 'hurt') {
+    ctx.font = `700 9px ${MONO}`;
+    ctx.textAlign = 'center';
+    ctx.fillText('x', -5.5, -8);
+    ctx.fillText('x', 5.5, -8);
+    ctx.textAlign = 'left';
+  } else {
+    ctx.fillRect(-8, -14, 5, 6);
+    ctx.fillRect(3, -14, 5, 6);
+  }
+
+  ctx.strokeStyle = amber;
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  if (player.mood === 'hurt') {
+    ctx.moveTo(-5, -3); ctx.quadraticCurveTo(0, -6, 5, -3);
+  } else {
+    ctx.moveTo(-5, -5); ctx.quadraticCurveTo(0, -1, 5, -5);
+  }
+  ctx.stroke();
+
+  /* scanlines + glass glare */
+  ctx.fillStyle = 'rgba(0,0,0,0.16)';
+  for (let sy = -19; sy < 1; sy += 3) ctx.fillRect(-14, sy, 28, 1);
+  ctx.fillStyle = 'rgba(255,255,255,0.10)';
+  ctx.beginPath();
+  ctx.moveTo(-13, -18); ctx.lineTo(-4, -18); ctx.lineTo(-11, -2); ctx.lineTo(-13, -2);
+  ctx.closePath(); ctx.fill();
+
+  ctx.restore();
+}
+
+/* ==========================================================================
+   Particles and dust
+   ========================================================================== */
+function drawParticles() {
+  for (const p of game.particles) {
+    ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawMotes(p) {
+  const [r, g, b] = hex('#FFFFFF');
+  for (const m of game.motes) {
+    ctx.globalAlpha = m.alpha * 0.5;
+    ctx.fillStyle = p.dust || `rgba(${r},${g},${b},1)`;
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+return { render };
+})();
+
+/* ===== ui/teambar.js ===== */
+const Mod_ui_teambar = (function() {
+const { game, world } = Mod_engine_state;
+const { CHALLENGES } = Mod_data_challenges;
+const { TEAM, ROLE_ORDER } = Mod_data_team;
+const { showToast } = Mod_ui_toast;
+
+const bar = document.getElementById('team-bar');
+
+let onJump = () => {};
+function setJumpHandler(fn) { onJump = fn; }
+
+/**
+ * The four nameplates along the bottom of the screen.
+ *
+ * Whoever is up next is lit; clicking them opens their desk directly, so a
+ * learner never has to walk back across a department to reach the desk they
+ * already know is theirs. A teammate with nothing left to do gets a tick.
+ */
+function renderTeamBar() {
+  const desks = CHALLENGES[game.level];
+  if (!desks || !world.desks.length) return;
+
+  const nextIdx = world.desks.findIndex(d => !d.done);
+  const nextRole = nextIdx === -1 ? null : (desks[nextIdx].role || 'developer');
+
+  bar.replaceChildren(...ROLE_ORDER.map(role => {
+    const pending = world.desks.some(
+      (d, i) => !d.done && (desks[i].role || 'developer') === role
+    );
+    const isUp = role === nextRole;
+
+    const plate = document.createElement('button');
+    plate.type = 'button';
+    plate.className = `nameplate ${role} ${isUp ? 'is-up' : 'is-waiting'}`;
+    plate.title = isUp
+      ? `${TEAM[role].name}'s turn — click to open the desk`
+      : `${TEAM[role].name}, ${TEAM[role].title}`;
+
+    const pip = document.createElement('span');
+    pip.className = 'pip';
+
+    const name = document.createElement('span');
+    name.className = 'nm';
+    name.textContent = TEAM[role].name;
+
+    plate.append(pip, name);
+
+    if (!pending) {
+      const tick = document.createElement('span');
+      tick.className = 'tick';
+      tick.textContent = '✓';
+      plate.append(tick);
+    }
+
+    plate.addEventListener('click', () => jumpToRole(role));
+    return plate;
+  }));
+}
+
+function jumpToRole(role) {
+  if (!game.running || game.paused) return;
+
+  const desks = CHALLENGES[game.level];
+  const nextIdx = world.desks.findIndex(d => !d.done);
+  if (nextIdx === -1) return;
+
+  const nextRole = desks[nextIdx].role || 'developer';
+  if (nextRole === role) {
+    onJump(nextIdx);
+  } else {
+    showToast(
+      `${TEAM[nextRole].name} goes first — it's the ${TEAM[nextRole].title.toLowerCase()}'s turn.`
+    );
+  }
+}
+
+return { setJumpHandler, renderTeamBar };
+})();
+
+/* ===== engine/loop.js ===== */
+const Mod_engine_loop = (function() {
+const { game, world, canvas, ctx, view } = Mod_engine_state;
+const { CHALLENGES } = Mod_data_challenges;
+const { LEVELS } = Mod_data_levels;
+const { updatePlayer, updateLedges, updateCamera, updateMotes, updateParticles, deskInReach } = Mod_engine_physics;
+const { render } = Mod_engine_render;
+
+/* --------------------------------------------------------------------------
+   Canvas sizing.
+
+   The backing store follows devicePixelRatio so desk labels and hairlines stay
+   sharp on a laptop screen; the context is scaled once, so every drawing
+   routine keeps working in plain CSS pixels via `view`.
+   -------------------------------------------------------------------------- */
+function resizeCanvas() {
+  view.dpr = Math.min(window.devicePixelRatio || 1, 2);
+  view.w = window.innerWidth;
+  view.h = window.innerHeight;
+
+  canvas.width = Math.floor(view.w * view.dpr);
+  canvas.height = Math.floor(view.h * view.dpr);
+  canvas.style.width = view.w + 'px';
+  canvas.style.height = view.h + 'px';
+
+  ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+}
+
+/* --------------------------------------------------------------------------
+   HUD
+   -------------------------------------------------------------------------- */
+const hud = {
+  meter:      document.getElementById('focus-meter'),
+  desks:      document.getElementById('hud-desks'),
+  points:     document.getElementById('hud-points'),
+  dept:       document.getElementById('hud-dept'),
+  prompt:     document.getElementById('prompt'),
+  promptText: document.getElementById('prompt-text')
+};
+
+const SEGMENTS = 10;
+const meterCells = [];
+for (let i = 0; i < SEGMENTS; i++) {
+  const cell = document.createElement('i');
+  hud.meter.appendChild(cell);
+  meterCells.push(cell);
+}
+
+/* --------------------------------------------------------------------------
+   Loop
+   -------------------------------------------------------------------------- */
+let onOutOfFocus = () => {};
+let onInteract = () => {};
+let drained = false;
+
+function setOutOfFocusHandler(fn) { onOutOfFocus = fn; }
+function setInteractHandler(fn) { onInteract = fn; }
+
+function startLoop() {
+  drained = false;
+  if (game.frameId) cancelAnimationFrame(game.frameId);
+  loop();
+}
+
+function stopLoop() {
+  if (game.frameId) cancelAnimationFrame(game.frameId);
+  game.frameId = null;
+}
+
+function loop() {
+  game.frameId = requestAnimationFrame(loop);
+  if (!game.running) return;
+
+  game.time++;
+  game.groundY = view.h - 96;
+
+  // ledges hang off the floor, which is only known once we have a viewport
+  for (const l of world.ledges) {
+    if (!l.baseY) l.baseY = game.groundY - 168;
+  }
+
+  if (!game.paused) {
+    updatePlayer();
+    updateLedges();
+    updateCamera();
+    updateMotes();
+    updateParticles();
+  }
+
+  render();
+  syncHud();
+
+  if (!game.paused && game.focus <= 0 && !drained) {
+    drained = true;
+    onOutOfFocus();
+  }
+}
+
+function syncHud() {
+  const total = CHALLENGES[game.level].length;
+  hud.desks.textContent = `${game.desksDone}/${total}`;
+  hud.points.textContent = game.points;
+  hud.dept.textContent = LEVELS[game.level].name;
+
+  const lit = Math.ceil((game.focus / 100) * SEGMENTS);
+  for (let i = 0; i < SEGMENTS; i++) {
+    meterCells[i].classList.toggle('off', i >= lit);
+  }
+  hud.meter.classList.toggle('low', game.focus <= 50 && game.focus > 25);
+  hud.meter.classList.toggle('crit', game.focus <= 25);
+  hud.meter.setAttribute('aria-label', `Focus ${game.focus} percent`);
+
+  const desk = game.paused ? null : deskInReach();
+  hud.prompt.classList.toggle('is-open', !!desk);
+  if (desk) {
+    hud.promptText.textContent = `Take over: ${desk.title.replace(/ Desk$/, '')}`;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Input
+   -------------------------------------------------------------------------- */
+function typing(e) {
+  const tag = (e.target && e.target.tagName) || '';
+  return tag === 'TEXTAREA' || tag === 'INPUT';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (typing(e)) return;
+  game.keys[e.key.toLowerCase()] = true;
+  game.keys[e.code] = true;
+  if (e.key === ' ' || e.code === 'Space') e.preventDefault();
+  if (e.code === 'KeyE' && game.running && !game.paused) {
+    const desk = deskInReach();
+    if (desk) onInteract(desk.index);
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  if (typing(e)) return;
+  game.keys[e.key.toLowerCase()] = false;
+  game.keys[e.code] = false;
+});
+
+/* A key held while the window loses focus would otherwise stick down forever. */
+window.addEventListener('blur', () => { game.keys = {}; });
+
+return { resizeCanvas, setOutOfFocusHandler, setInteractHandler, startLoop, stopLoop };
+})();
+
+/* ===== ui/challenge.js ===== */
+const Mod_ui_challenge = (function() {
+const { game, player, world, spark } = Mod_engine_state;
+const { CHALLENGES } = Mod_data_challenges;
+const { TEAM, ROLE_ORDER, ROLE_COLOR, SUBMIT_LABEL, WORKING_LABEL, PASS_LABEL, FAIL_LABEL } = Mod_data_team;
+const { showToast } = Mod_ui_toast;
+const { renderTeamBar } = Mod_ui_teambar;
+
+const el = {
+  overlay:   document.getElementById('ticket-overlay'),
+  badge:     document.getElementById('role-badge'),
+  title:     document.getElementById('ticket-title'),
+  count:     document.getElementById('ticket-count'),
+  pipeline:  document.getElementById('pipeline'),
+  brief:     document.getElementById('ticket-brief'),
+  attach:    document.getElementById('attachment'),
+  attachTab: document.getElementById('attachment-tab'),
+  attachCode:document.getElementById('attachment-code'),
+  task:      document.getElementById('ticket-task'),
+  verdict:   document.getElementById('verdict'),
+  verdictNote: document.getElementById('verdict-note'),
+  answer:    document.getElementById('answer'),
+  input:     document.getElementById('code-input'),
+  example:   document.getElementById('example-box'),
+  exampleBtn:document.getElementById('btn-example'),
+  hint:      document.getElementById('hint-line'),
+  submit:    document.getElementById('btn-submit'),
+  result:    document.getElementById('result'),
+  continue:  document.getElementById('btn-continue'),
+  walkAway:  document.getElementById('btn-walk-away')
+};
+
+const POINTS_PER_DESK = 100;
+const REVIEW_DELAY = 900;
+
+let deskIdx = null;
+let role = 'developer';
+let attempts = 0;
+let awaitingVerdict = false;
+
+let onDeskDone = () => {};
+let onDrained = () => {};
+function setDeskDoneHandler(fn) { onDeskDone = fn; }
+function setDrainedHandler(fn) { onDrained = fn; }
+
+function escapeHtml(s) {
+  return (s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/* ==========================================================================
+   Opening a desk
+   ========================================================================== */
+function openDesk(idx) {
+  const desks = CHALLENGES[game.level];
+  const c = desks[idx];
+  if (!c || world.desks[idx].done) return;
+
+  // Desks are strictly sequential — see deskInReach for why.
+  const nextIdx = world.desks.findIndex(d => !d.done);
+  if (idx !== nextIdx) {
+    showToast(`${TEAM[desks[nextIdx].role].name} has to finish desk ${nextIdx + 1} first.`);
+    return;
+  }
+
+  game.paused = true;
+  deskIdx = idx;
+  attempts = 0;
+  role = c.role || 'developer';
+
+  /* header */
+  el.badge.className = `role-badge ${role}`;
+  el.badge.textContent = TEAM[role].title;
+  el.title.textContent = c.title;
+  el.count.textContent = `Desk ${idx + 1} of ${desks.length}`;
+  renderPipeline(role);
+
+  /* brief */
+  el.brief.textContent = c.story;
+
+  /* the teammate's code, if this desk receives a handoff */
+  const handoff = c.sourceIndex !== undefined && game.submitted[c.sourceIndex] !== undefined;
+  if (handoff) {
+    const fromRole = desks[c.sourceIndex].role || 'developer';
+    el.attachTab.textContent = `From ${TEAM[fromRole].name} — just landed in your queue`;
+    el.attachTab.style.background = ROLE_COLOR[fromRole];
+    el.attachTab.style.color = fromRole === 'developer' ? '#1F1C16' : '#FBF8F0';
+    el.attachCode.textContent = game.submitted[c.sourceIndex];
+    el.attach.hidden = false;
+  } else if (c.code) {
+    el.attachTab.textContent = 'On screen';
+    el.attachTab.style.background = '';
+    el.attachTab.style.color = '';
+    el.attachCode.innerHTML = c.code;
+    el.attach.hidden = false;
+  } else {
+    el.attach.hidden = true;
+  }
+
+  el.task.textContent = c.question;
+
+  /* editor */
+  el.input.value = '';
+  el.input.disabled = false;
+  el.example.textContent = c.placeholder || '';
+  el.example.hidden = true;
+  el.exampleBtn.textContent = 'Show me an example';
+  el.hint.innerHTML = 'Press <code>Ctrl</code> + <code>Enter</code> to submit.';
+  el.submit.disabled = false;
+  el.submit.textContent = SUBMIT_LABEL[role];
+
+  el.result.hidden = true;
+  el.result.className = 'result';
+  el.continue.hidden = true;
+  el.walkAway.hidden = false;
+
+  /* The judgement call. This is the mechanic the product rests on: a reviewer
+     has to form an opinion about a teammate's code before being allowed to
+     prove anything about it. */
+  awaitingVerdict = handoff && (role === 'tester' || role === 'client');
+  el.verdict.hidden = !awaitingVerdict;
+  el.answer.hidden = awaitingVerdict;
+  el.verdictNote.textContent = '';
+  el.verdict.querySelectorAll('[data-verdict]').forEach(b => {
+    b.classList.remove('picked-ok', 'picked-fault');
+    b.disabled = false;
+  });
+
+  el.overlay.classList.add('is-open');
+  if (!awaitingVerdict) el.input.focus();
+}
+
+function renderPipeline(active) {
+  el.pipeline.replaceChildren(...ROLE_ORDER.flatMap((r, i) => {
+    const node = document.createElement('span');
+    node.className = `node${r === active ? ' is-active' : ''}`;
+    node.textContent = TEAM[r].name;
+    if (i === ROLE_ORDER.length - 1) return [node];
+    const arrow = document.createElement('span');
+    arrow.className = 'arrow';
+    arrow.textContent = '→';
+    return [node, arrow];
+  }));
+}
+
+/* ==========================================================================
+   The judgement call
+   ========================================================================== */
+function chooseVerdict(saidCorrect) {
+  if (!awaitingVerdict) return;
+  awaitingVerdict = false;
+
+  el.verdict.querySelectorAll('[data-verdict]').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.verdict === (saidCorrect ? 'ok' : 'bug')) {
+      b.classList.add(saidCorrect ? 'picked-ok' : 'picked-fault');
+    }
+  });
+
+  if (saidCorrect) {
+    game.focus = Math.min(100, game.focus + 5);
+    el.verdictNote.textContent = `Good eye — it does hold up. Now prove it.`;
+  } else {
+    el.verdictNote.textContent = `It actually checks out. Prove it properly anyway — that is the job.`;
+  }
+
+  setTimeout(() => {
+    el.verdict.hidden = true;
+    el.answer.hidden = false;
+    el.input.focus();
+  }, 850);
+}
+
+/* ==========================================================================
+   Submitting
+   ========================================================================== */
+function submitAnswer() {
+  if (deskIdx === null) return;
+
+  const c = CHALLENGES[game.level][deskIdx];
+  const raw = el.input.value;
+
+  if (!raw.trim()) {
+    el.hint.textContent = 'Write some Python before submitting.';
+    el.input.focus();
+    return;
+  }
+
+  el.input.disabled = true;
+  el.submit.disabled = true;
+  el.walkAway.hidden = true;
+  el.hint.textContent = '';
+  el.result.hidden = false;
+  el.result.className = 'result is-working';
+  el.result.textContent = WORKING_LABEL[role];
+
+  setTimeout(() => c.validate(raw) ? accept(raw) : reject(c, raw), REVIEW_DELAY);
+}
+
+function accept(raw) {
+  const desks = CHALLENGES[game.level];
+
+  el.result.className = 'result is-pass';
+  el.result.textContent = PASS_LABEL[role].replace(/&mdash;/g, '—');
+  el.answer.hidden = true;
+  el.continue.hidden = false;
+  el.continue.focus();
+
+  game.submitted[deskIdx] = raw;
+  game.points += POINTS_PER_DESK;
+  game.totalPoints += POINTS_PER_DESK;
+  game.focus = Math.min(100, game.focus + 10);
+  world.desks[deskIdx].done = true;
+  game.desksDone++;
+
+  player.mood = 'happy';
+  player.moodTimer = 90;
+  spark(player.x, player.y, ROLE_COLOR[role], 26, 11);
+
+  const next = desks[deskIdx + 1];
+  if (next) {
+    const nextRole = next.role || 'developer';
+    if (nextRole !== role) {
+      showToast(`${TEAM[role].name} → ${TEAM[nextRole].name}: handed off.`, 'handoff');
+    }
+  }
+
+  renderTeamBar();
+}
+
+function reject(c, raw) {
+  attempts++;
+  el.result.className = 'result is-fail';
+
+  /* Name the actual gap where the desk defines one. "Not quite" teaches
+     nothing; "your assert should check the access variable" teaches. */
+  let message;
+  if (c.checkPoints) {
+    const missed = c.checkPoints.filter(cp => !cp.test(raw));
+    message = missed.length
+      ? `Not quite — ${missed.map(m => m.desc).join('; ')}.`
+      : 'Close. Something in the logic is still off — read it back through once more.';
+  } else {
+    message = FAIL_LABEL[role].replace(/&mdash;/g, '—');
+  }
+  el.result.textContent = message;
+
+  el.hint.textContent = `Hint: ${c.hint}`;
+  if (attempts >= 2 && el.example.hidden) {
+    el.example.hidden = false;
+    el.exampleBtn.textContent = 'Hide the example';
+  }
+
+  game.focus = Math.max(0, game.focus - 10);
+
+  el.input.disabled = false;
+  el.submit.disabled = false;
+  el.walkAway.hidden = false;
+  el.submit.textContent = SUBMIT_LABEL[role];
+  el.input.focus();
+
+  if (game.focus <= 0) {
+    setTimeout(() => {
+      closeDesk();
+      onDrained();
+    }, 900);
+  }
+}
+
+/* ==========================================================================
+   Closing
+   ========================================================================== */
+function closeDesk() {
+  el.overlay.classList.remove('is-open');
+  deskIdx = null;
+  game.paused = false;
+  game.keys = {};
+}
+
+function continueFromDesk() {
+  closeDesk();
+  renderTeamBar();
+
+  if (game.desksDone >= CHALLENGES[game.level].length) {
+    setTimeout(() => onDeskDone(), 320);
+  } else {
+    showToast('Next desk is waiting.', 'pass');
+  }
+}
+
+function toggleExample() {
+  const showing = !el.example.hidden;
+  el.example.hidden = showing;
+  el.exampleBtn.textContent = showing ? 'Show me an example' : 'Hide the example';
+}
+
+return { setDeskDoneHandler, setDrainedHandler, openDesk, chooseVerdict, submitAnswer, closeDesk, continueFromDesk, toggleExample };
+})();
+
+/* ===== ui/screens.js ===== */
+const Mod_ui_screens = (function() {
+const { game, player, view, resetRun } = Mod_engine_state;
+const { LEVELS, TOTAL_LEVELS } = Mod_data_levels;
+const { CHALLENGES } = Mod_data_challenges;
+const { buildLevel } = Mod_engine_world;
+const { startLoop, stopLoop, resizeCanvas } = Mod_engine_loop;
+const { renderTeamBar } = Mod_ui_teambar;
+const { showToast } = Mod_ui_toast;
+
+const screens = {
+  splash:   document.getElementById('screen-splash'),
+  start:    document.getElementById('screen-start'),
+  floors:   document.getElementById('screen-floors'),
+  game:     document.getElementById('screen-game'),
+  complete: document.getElementById('screen-complete'),
+  win:      document.getElementById('screen-win')
+};
+
+/** Exactly one screen is ever open. */
+function show(name) {
+  for (const [key, node] of Object.entries(screens)) {
+    node.classList.toggle('is-open', key === name);
+  }
+}
+
+/* ==========================================================================
+   Splash — the one-time jump from the title screen into the induction.
+   ========================================================================== */
+const warpOverlay = document.getElementById('warp-overlay');
+
+function launchFromSplash() {
+  const launchBtn = document.getElementById('btn-launch');
+  if (launchBtn.disabled) return;
+  launchBtn.disabled = true;
+
+  warpOverlay.classList.add('is-warping');
+
+  // Swap the screen underneath while the flash is at its brightest, so the
+  // cut is hidden inside the light rather than seen as a hard jump.
+  setTimeout(() => show('start'), 480);
+
+  // Clean up once the flash has fully faded.
+  setTimeout(() => {
+    warpOverlay.classList.remove('is-warping');
+    launchBtn.disabled = false;
+  }, 950);
+}
+
+/* ==========================================================================
+   Floor directory
+   ========================================================================== */
+const directory = document.getElementById('directory');
+
+function renderDirectory() {
+  directory.replaceChildren(...LEVELS.map((lvl, i) => {
+    const unlocked = game.unlocked[i];
+    const done = game.completed[i];
+
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = `floor${unlocked ? '' : ' is-locked'}`;
+    card.dataset.dept = i;
+    card.disabled = !unlocked;
+
+    const no = document.createElement('span');
+    no.className = 'no';
+    no.textContent = i + 1;
+
+    const body = document.createElement('span');
+
+    const h = document.createElement('h3');
+    h.textContent = lvl.name;
+
+    const p = document.createElement('p');
+    p.textContent = lvl.brief;
+
+    const status = document.createElement('span');
+    if (done) {
+      status.className = 'status done';
+      status.textContent = 'Complete';
+    } else if (unlocked) {
+      status.className = 'status open';
+      status.textContent = 'Open';
+    } else {
+      status.className = 'status shut';
+      status.textContent = `Finish department ${i}`;
+    }
+
+    body.append(h, p, status);
+    card.append(no, body);
+    card.addEventListener('click', () => startLevel(i));
+    return card;
+  }));
+}
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+function showStart() {
+  stopLoop();
+  game.running = false;
+  game.paused = false;
+  show('start');
+}
+
+function showFloors() {
+  stopLoop();
+  game.running = false;
+  game.paused = false;
+  renderDirectory();
+  show('floors');
+}
+
+function startLevel(levelIdx) {
+  if (!game.unlocked[levelIdx]) {
+    showToast('Finish the previous department first.');
+    return;
+  }
+
+  game.level = levelIdx;
+  resetRun();
+
+  show('game');
+  resizeCanvas();
+
+  game.groundY = view.h - 96;
+  buildLevel(levelIdx);
+  renderTeamBar();
+
+  player.x = 110;
+  player.y = game.groundY - player.radius;
+
+  game.cameraX = 0;
+  game.running = true;
+  startLoop();
+
+  showToast(`Department ${levelIdx + 1}: ${LEVELS[levelIdx].name}`);
+}
+
+/* ==========================================================================
+   End of a department
+   ========================================================================== */
+function completeLevel() {
+  game.running = false;
+  game.paused = false;
+  stopLoop();
+  game.completed[game.level] = true;
+
+  if (game.level < TOTAL_LEVELS - 1) {
+    game.unlocked[game.level + 1] = true;
+  }
+
+  /* Client review: focus left is the proxy for how cleanly it went. */
+  let stars = 1;
+  if (game.focus >= 50) stars = 2;
+  if (game.focus >= 80) stars = 3;
+
+  document.getElementById('complete-title').textContent =
+    `Department ${game.level + 1} closed`;
+  document.getElementById('complete-text').textContent =
+    `${LEVELS[game.level].name} is signed off. All ${CHALLENGES[game.level].length} desks cleared by the Nova team.`;
+
+  const rating = document.getElementById('complete-rating');
+  rating.replaceChildren(...[0, 1, 2].map(i => {
+    const box = document.createElement('i');
+    if (i < stars) box.className = 'on';
+    return box;
+  }));
+  rating.setAttribute('title', `${stars} of 3`);
+
+  document.getElementById('complete-points').textContent = game.points;
+  document.getElementById('complete-focus').textContent = `${game.focus}%`;
+
+  const nextBtn = document.getElementById('btn-next-dept');
+  nextBtn.textContent = game.level >= TOTAL_LEVELS - 1
+    ? 'Deliver the project'
+    : 'Next department';
+
+  show('complete');
+}
+
+function nextLevel() {
+  if (game.level >= TOTAL_LEVELS - 1) {
+    showWin();
+    return;
+  }
+  startLevel(game.level + 1);
+}
+
+function showWin() {
+  stopLoop();
+  game.running = false;
+  document.getElementById('win-points').textContent = game.totalPoints;
+  show('win');
+}
+
+/* ==========================================================================
+   Running out of focus
+   ========================================================================== */
+function outOfFocus() {
+  game.running = false;
+  game.paused = false;
+  stopLoop();
+  showToast('You ran out of focus. Take that department again.', 'fault');
+  setTimeout(showFloors, 1500);
+}
+
+window.addEventListener('resize', () => {
+  if (game.running) resizeCanvas();
+});
+
+return { launchFromSplash, renderDirectory, showStart, showFloors, startLevel, completeLevel, nextLevel, showWin, outOfFocus };
+})();
+
+/* ===== main.js ===== */
+/**
+ * Cantrick — entry point.
+ *
+ * This file does one job: wire the modules together and bind the DOM. No game
+ * logic lives here. Every button in index.html is bound below rather than
+ * through inline onclick attributes, so markup stays free of behaviour.
+ */
+
+const { setInteractHandler, setOutOfFocusHandler, resizeCanvas } = Mod_engine_loop;
+const { showStart, showFloors, nextLevel, completeLevel, outOfFocus, renderDirectory, launchFromSplash } = Mod_ui_screens;
+const { openDesk, submitAnswer, chooseVerdict, closeDesk, continueFromDesk, toggleExample, setDeskDoneHandler, setDrainedHandler } = Mod_ui_challenge;
+const { setJumpHandler } = Mod_ui_teambar;
+
+/* --- cross-module wiring ------------------------------------------------- */
+setInteractHandler(openDesk);       // pressing E at a desk
+setJumpHandler(openDesk);           // clicking a lit nameplate
+setDeskDoneHandler(completeLevel);  // last desk in a department cleared
+setDrainedHandler(outOfFocus);      // focus hit zero mid-ticket
+setOutOfFocusHandler(outOfFocus);   // focus hit zero out on the floor
+
+/* --- screens -------------------------------------------------------------- */
+document.getElementById('btn-launch').addEventListener('click', launchFromSplash);
+document.getElementById('btn-begin').addEventListener('click', showFloors);
+document.getElementById('btn-back-start').addEventListener('click', showStart);
+document.getElementById('btn-back-floors').addEventListener('click', showFloors);
+document.getElementById('btn-next-dept').addEventListener('click', nextLevel);
+document.getElementById('btn-replay').addEventListener('click', () => location.reload());
+
+/* --- the work ticket ------------------------------------------------------ */
+document.getElementById('btn-submit').addEventListener('click', submitAnswer);
+document.getElementById('btn-example').addEventListener('click', toggleExample);
+document.getElementById('btn-continue').addEventListener('click', continueFromDesk);
+document.getElementById('btn-walk-away').addEventListener('click', closeDesk);
+
+document.querySelectorAll('[data-verdict]').forEach(btn => {
+  btn.addEventListener('click', () => chooseVerdict(btn.dataset.verdict === 'ok'));
+});
+
+document.getElementById('code-input').addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    submitAnswer();
+  }
+});
+
+/* Escape leaves a desk without losing anything already submitted. */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('ticket-overlay').classList.contains('is-open')) {
+    closeDesk();
+  }
+});
+
+/* --- boot ----------------------------------------------------------------- */
+resizeCanvas();
+renderDirectory();
+
+// Tells the guard in index.html that the modules actually loaded.
+window.__cantrickReady = true;
+
+</script>
+</body>
+</html>
